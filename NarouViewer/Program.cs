@@ -18,6 +18,7 @@ namespace NarouViewer
         [STAThread]
         static void Main()
         {
+            /*
             Task.Run(async () =>
             {
                 NarouAPI.GetParameter p = new NarouAPI.GetParameter();
@@ -35,12 +36,11 @@ namespace NarouViewer
             });
 
             Console.ReadKey();
+            */
 
-            /*
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-            */
         }
     }
 }

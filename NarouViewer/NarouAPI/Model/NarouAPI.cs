@@ -15,7 +15,7 @@ namespace NarouViewer.API
     /// </summary>
     public class NarouAPI
     {
-        public class Data
+        public class NovelData
         {
             public int allcount { get; set; }
             public string title { get; set; }
@@ -930,15 +930,15 @@ namespace NarouViewer.API
         }
         private static string url = "https://api.syosetu.com/novelapi/api/?";
 
-        public static async Task<List<Data>> Get()
+        public static async Task<List<NovelData>> Get()
         {
             return await Get(new GetParameter());
         }
-        public static async Task<List<Data>> Get(GetParameter getParameter)
+        public static async Task<List<NovelData>> Get(GetParameter getParameter)
         {
             string url = NarouAPI.url + getParameter.ToString();
 
-            List<Data> getData = null;
+            List<NovelData> getData = null;
             using (var client = new HttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(url);
@@ -954,12 +954,12 @@ namespace NarouViewer.API
                             switch(getParameter.outType)
                             {
                                 case GetParameter.OutType.json:
-                                    getData = JsonConvert.DeserializeObject<List<Data>>(data);
+                                    getData = JsonConvert.DeserializeObject<List<NovelData>>(data);
                                     break;
 
                                 case GetParameter.OutType.yaml:
                                     var deserializer = new Deserializer();
-                                    getData = deserializer.Deserialize<List<Data>>(data);
+                                    getData = deserializer.Deserialize<List<NovelData>>(data);
                                     break;
                             }
                         }

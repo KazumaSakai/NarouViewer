@@ -62,7 +62,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="NarouAPI\Model\NarouAPI.cs" />
-    <Compile Include="NarouAPI\View + Controller\DataView.cs">
+    <Compile Include="NarouAPI\View + Controller\NovelDataView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
@@ -70,8 +70,8 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NarouAPI\View + Controller\DataView.resx">
-      <DependentUpon>DataView.cs</DependentUpon>
+    <EmbeddedResource Include="NarouAPI\View + Controller\NovelDataView.resx">
+      <DependentUpon>NovelDataView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

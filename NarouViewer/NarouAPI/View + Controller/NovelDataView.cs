@@ -1,11 +1,12 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
 
 using NarouViewer.API;
 
 namespace NarouViewer
 {
-    public class NovelDataVC : Panel
+    public class NovelDataView : Panel
     {
         public NarouAPI.NovelData model;
 
@@ -30,7 +31,7 @@ namespace NarouViewer
         private Label illustrationLabel;
         private Label reviewLabel;
 
-        public NovelDataVC(NarouAPI.NovelData model)
+        public NovelDataView(NarouAPI.NovelData model)
         {
             //  Model
             this.model = model;
@@ -86,7 +87,7 @@ namespace NarouViewer
                 this.Name = "TitleLink";
                 this.Size = new Size(125, 21);
                 this.TabStop = true;
-                this.Text = "小説タイトル";
+                this.Text = model.title;
                 this.VisitedLinkColor = Color.FromArgb(255, 128, 0);
             }
         }
@@ -100,13 +101,14 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Location = new Point(3, 52);
                 this.MaximumSize = new Size(115, 203);
                 this.MinimumSize = new Size(115, 203);
                 this.Name = "NovelPageNumber";
                 this.Size = new Size(115, 203);
-                this.Text = "連載中\r\n(全254部分)\r\n";
+
+                string novelend = model.end == 0 ? (model.novel_type == 1 ? "完結済小説" : "短編小説") : "連載中";
+                this.Text = novelend + (model.novel_type == 1 ? "\r\n(全" + model.general_all_no + "部分)" : "");
                 this.TextAlign = ContentAlignment.MiddleCenter;
             }
         }
@@ -144,7 +146,7 @@ namespace NarouViewer
                 this.Name = "WriteLink";
                 this.Size = new Size(56, 16);
                 this.TabStop = true;
-                this.Text = "作者名";
+                this.Text = model.writer;
             }
         }
         private class SummryLabel : Label
@@ -157,7 +159,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ForeColor = Color.FromArgb(110, 64, 0);
                 this.Location = new Point(121, 52);
@@ -166,7 +167,9 @@ namespace NarouViewer
                 this.MinimumSize = new Size(575, 50);
                 this.Name = "Summary";
                 this.Size = new Size(575, 50);
-                this.Text = "あらすじ、あらすじ、あらすじ、あらすじ、あらすじ、あらすじ、あらすじ、あらすじ、あらすじ\r\n\r\n";
+
+                if (model.story == null) return;
+                this.Text = model.story;
             }
         }
         private class GenreLabel : Label
@@ -179,7 +182,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(121, 105);
                 this.Margin = new Padding(0);
@@ -198,7 +200,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(204, 105);
                 this.MaximumSize = new Size(492, 18);
@@ -206,7 +207,8 @@ namespace NarouViewer
                 this.Name = "GenreLink";
                 this.Size = new Size(492, 18);
                 this.TabStop = true;
-                this.Text = "ファンタジー";
+
+                this.Text = model.genre.ToString();
             }
         }
         private class KeyWordLabel : Label
@@ -219,7 +221,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(120, 126);
                 this.Margin = new Padding(3, 3, 0, 3);
@@ -231,6 +232,7 @@ namespace NarouViewer
         private class TagsPanel : Panel
         {
             private NarouAPI.NovelData model;
+            private List<TagLink> tagLinks;
 
             public TagsPanel(NarouAPI.NovelData model)
             {
@@ -238,8 +240,60 @@ namespace NarouViewer
                 this.model = model;
 
                 this.Location = new Point(217, 126);
-                this.Name = "panel2";
+                this.Name = "TagsPanel";
                 this.Size = new Size(480, 44);
+                
+                if (model.keyword == null) return;
+
+                this.tagLinks = new List<TagLink>();
+
+                //  文字の大きさ取得用
+                Font stringFont = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
+                Graphics g = Graphics.FromHwnd(this.Handle);
+
+                //  タグリンク作成
+                int nowLine = 0;
+                int nextX = 2;
+                foreach (string keyword in model.keyword.Split(' '))
+                {
+                    TagLink tagLink = new TagLink(keyword);
+
+                    //  文字の大きさ取得
+                    SizeF f = g.MeasureString(keyword, stringFont);
+                    int xSize = (int)System.Math.Ceiling(f.Width) + 1;
+
+                    //  改行
+                    if (nextX != 2 && nextX + xSize > this.Size.Width)
+                    {
+                        nowLine++;
+                        nextX = 2;
+                    }
+
+                    tagLink.Location = new Point(nextX, 2 + (nowLine * 22));
+                    tagLink.Size = new Size(xSize, 18);
+
+                    nextX += xSize + 1;
+
+                    this.tagLinks.Add(tagLink);
+                    this.Controls.Add(tagLink);
+                }
+
+                stringFont.Dispose();
+                g.Dispose();
+            }
+
+            private class TagLink : LinkLabel
+            {
+                public string linkName;
+
+                public TagLink(string linkName)
+                {
+                    this.linkName = linkName;
+                    this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
+                    this.Name = linkName;
+                    this.Text = linkName;
+                    this.TabStop = true;
+                }
             }
         }
         private class LastupLabel : Label
@@ -252,7 +306,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(120, 173);
                 this.Margin = new Padding(3, 0, 0, 3);
@@ -260,7 +313,9 @@ namespace NarouViewer
                 this.MinimumSize = new Size(287, 18);
                 this.Name = "Lastup";
                 this.Size = new Size(287, 18);
-                this.Text = "最終更新日：2018/11/17 07:48";
+
+                if (model.general_lastup == null) return;
+                this.Text = "最終更新日：" + model.general_lastup.Replace('-', '/');
             }
         }
         private class ReadTimeLabel : Label
@@ -273,7 +328,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(409, 173);
                 this.Margin = new Padding(3, 0, 0, 3);
@@ -281,8 +335,9 @@ namespace NarouViewer
                 this.MinimumSize = new Size(287, 18);
                 this.Name = "ReadTime";
                 this.Size = new Size(287, 18);
-                this.Text = "読了時間：約282分（140,702文字）\r\n";
                 this.TextAlign = ContentAlignment.MiddleRight;
+
+                this.Text = "読了時間：約" + model.time + "分 （" + model.length + "文字）";
             }
         }
         private class UniqueUserLabel : Label
@@ -295,7 +350,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(120, 194);
                 this.Margin = new Padding(3, 0, 0, 3);
@@ -303,7 +357,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(214, 18);
                 this.Name = "UniqueUser";
                 this.Size = new Size(215, 18);
-                this.Text = "週別ユニークユーザ： 71000人";
+                this.Text = "週別ユニークユーザ： " + model.weekly_unique + "人";
             }
         }
         private class ReviewLabel : Label
@@ -316,7 +370,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ImageAlign = ContentAlignment.MiddleLeft;
                 this.Location = new Point(337, 194);
@@ -325,7 +378,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(147, 18);
                 this.Name = "Review";
                 this.Size = new Size(147, 18);
-                this.Text = "レビュー数： 1000件";
+                this.Text = "レビュー数： " + model.review_cnt + "件";
                 this.TextAlign = ContentAlignment.MiddleLeft;
             }
         }
@@ -339,7 +392,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(486, 194);
                 this.Margin = new Padding(2, 0, 0, 3);
@@ -347,7 +399,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(63, 18);
                 this.Name = "PCUpload";
                 this.Size = new Size(63, 18);
-                this.Text = "PC投稿";
+                this.Text = model.pc_or_k != 1 ? "PC投稿" : "";
                 this.TextAlign = ContentAlignment.MiddleCenter;
             }
         }
@@ -361,7 +413,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(551, 194);
                 this.Margin = new Padding(2, 0, 0, 3);
@@ -369,7 +420,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(74, 18);
                 this.Name = "PhoneUploadLabel";
                 this.Size = new Size(74, 18);
-                this.Text = "携帯投稿";
+                this.Text = model.pc_or_k != 2 ? "携帯投稿" : "";
                 this.TextAlign = ContentAlignment.MiddleCenter;
             }
         }
@@ -383,7 +434,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(627, 194);
                 this.Margin = new Padding(2, 0, 0, 3);
@@ -391,7 +441,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(69, 18);
                 this.Name = "Illustration";
                 this.Size = new Size(69, 18);
-                this.Text = "挿絵あり\r\n";
+                this.Text = model.sasie_cnt > 0 ? "挿絵あり" : "";
                 this.TextAlign = ContentAlignment.MiddleCenter;
             }
         }
@@ -405,7 +455,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ForeColor = Color.Red;
                 this.Location = new Point(120, 215);
@@ -414,7 +463,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(576, 18);
                 this.Name = "TotalPoint";
                 this.Size = new Size(576, 18);
-                this.Text = "総合評価ポイント： 274 pt\r\n";
+                this.Text = "総合評価ポイント： " + model.global_point + " pt";
             }
         }
         private class EvaluatorLabel : Label
@@ -427,7 +476,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ForeColor = Color.Black;
                 this.Location = new Point(120, 236);
@@ -436,7 +484,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(189, 18);
                 this.Name = "EvaluatorNumber";
                 this.Size = new Size(189, 18);
-                this.Text = "評価人数： 8,0000,0000人";
+                this.Text = "評価人数： " + model.all_hyoka_cnt + "人";
             }
         }
         private class EvaluationLabel : Label
@@ -449,7 +497,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ForeColor = Color.Black;
                 this.Location = new Point(311, 236);
@@ -458,7 +505,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(192, 18);
                 this.Name = "EvaluationPoints";
                 this.Size = new Size(192, 18);
-                this.Text = "評価点： 6,0000,0000 pt";
+                this.Text = "評価点： " + model.all_point + " pt";
             }
         }
         private class BookmarkLabel : Label
@@ -471,7 +518,6 @@ namespace NarouViewer
                 this.model = model;
 
                 this.AutoSize = true;
-                this.BorderStyle = BorderStyle.FixedSingle;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.ForeColor = Color.Black;
                 this.Location = new Point(505, 236);
@@ -480,7 +526,7 @@ namespace NarouViewer
                 this.MinimumSize = new Size(191, 18);
                 this.Name = "BookMarkPoint";
                 this.Size = new Size(191, 18);
-                this.Text = "ブックマーク： 1000,0000件 ";
+                this.Text = "ブックマーク： " + model.fav_novel_cnt + "件 ";
             }
         }
     }

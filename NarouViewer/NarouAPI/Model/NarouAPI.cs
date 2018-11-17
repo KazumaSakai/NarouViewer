@@ -51,6 +51,7 @@ namespace NarouViewer.API
             public int kaiwaritu { get; set; }
             public string novelupdated_at { get; set; }
             public string updated_at { get; set; }
+            public int weekly_unique { get; set; }
         }
 
         /// <summary>
@@ -628,6 +629,10 @@ namespace NarouViewer.API
             /// 検索する最終掲載日
             /// </summary>
             public LastUp lastUp;
+            /// <summary>
+            /// 週間ユニークユーザー数を取得する
+            /// </summary>
+            public bool weekly;
 
             /// <summary>
             /// コンストラクタ
@@ -675,6 +680,7 @@ namespace NarouViewer.API
                 this.search_NotStop = false;
                 this.search_PickUp = false;
                 this.lastUp = 0;
+                this.weekly = true;
             }
 
             public static string ItemFlagToString(ItemFlag itemFlag)
@@ -925,6 +931,7 @@ namespace NarouViewer.API
                 {
                     args += "&lastup=" + lastUp.ToString();
                 }
+                if (weekly) args += "&opt=weekly";
                 return args;
             }
         }

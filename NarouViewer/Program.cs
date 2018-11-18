@@ -12,21 +12,19 @@ namespace NarouViewer
         [STAThread]
         static void Main()
         {
-            List<NarouAPI.NovelData> list = null;
 
             //  Set Parameter
             NarouAPI.GetParameter parameter = new NarouAPI.GetParameter();
             parameter.limit = 20;
             parameter.useGZIP = true;
-            parameter.outType = NarouAPI.GetParameter.OutType.yaml;
+            parameter.outType = NarouAPI.GetParameter.OutType.json;
 
             //  Get
-            list = NarouAPI.Get(parameter).Result;
+            List<NarouAPI.NovelData> list = NarouAPI.Get(parameter).Result;
 
             //  Form
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             Form1 form = new Form1();
             form.Controls.Add(new NovelDataListView(list));
 

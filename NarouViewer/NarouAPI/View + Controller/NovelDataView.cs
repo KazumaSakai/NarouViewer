@@ -1,7 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
-
 using NarouViewer.API;
 
 namespace NarouViewer

@@ -14,18 +14,21 @@ namespace NarouViewer
         {
             List<NarouAPI.NovelData> list = null;
 
-            NarouAPI.GetParameter p = new NarouAPI.GetParameter();
-            p.limit = 2;
-            p.useGZIP = true;
-            p.outType = NarouAPI.GetParameter.OutType.yaml;
-            list = NarouAPI.Get(p).Result;
+            //  Set Parameter
+            NarouAPI.GetParameter parameter = new NarouAPI.GetParameter();
+            parameter.limit = 20;
+            parameter.useGZIP = true;
+            parameter.outType = NarouAPI.GetParameter.OutType.yaml;
 
+            //  Get
+            list = NarouAPI.Get(parameter).Result;
+
+            //  Form
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-
             Form1 form = new Form1();
-            form.Controls.Add(new NovelDataView(list[1]));
+            form.Controls.Add(new NovelDataListView(list));
 
             Application.Run(form);
         }

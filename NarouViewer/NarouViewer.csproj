@@ -62,6 +62,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="NarouAPI\Model\NarouAPI.cs" />
+    <Compile Include="NarouAPI\View + Controller\NovelDataListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="NarouAPI\View + Controller\NovelDataView.cs">
       <SubType>Component</SubType>
     </Compile>

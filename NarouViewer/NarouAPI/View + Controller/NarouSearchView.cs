@@ -50,11 +50,10 @@ namespace NarouViewer
         private ChoiceDetailOption choiceDetailOption;
         private SearchButton searchButton;
 
-        public NarouSearchView(NarouAPI.GetParameter model, NovelDataListView listModel)
+        public NarouSearchView(NarouAPI.GetParameter model)
         {
-            this.Location = new Point(12, 12);
+            this.Location = new Point(3, 3);
             this.Name = "searchPanel";
-            this.Size = new Size(700, 170);
 
             this.Controls.Add(this.searchLabel = new SearchLabel());
             this.Controls.Add(this.searchTextBox = new SearchTextBox());
@@ -66,11 +65,13 @@ namespace NarouViewer
             this.Controls.Add(this.choiceGenreButton = new ChoiceGenreButton());
             this.Controls.Add(this.choiceDetailOption = new ChoiceDetailOption());
             this.Controls.Add(this.searchButton = new SearchButton());
+            this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
+            this.Size = new Size(706, 185 + listModel.Size.Height);
 
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
 
-            this.listModel = listModel;
             this.model = model;
+            this.Search();
         }
 
         private void ChangeModel()
@@ -89,10 +90,16 @@ namespace NarouViewer
         public void Search()
         {
             if (listModel == null) return;
+            this.ChangeModel();
 
             Task.Run(async () =>
             {
-                listModel.model = await NarouAPI.Get(model);
+                this.listModel.model = await NarouAPI.Get(model);
+
+                Invoke((Action)(() =>
+                {
+                    this.Size = new Size(706, 185 + listModel.Size.Height);
+                }));
             });
         }
 

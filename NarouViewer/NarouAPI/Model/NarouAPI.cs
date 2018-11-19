@@ -651,7 +651,7 @@ namespace NarouViewer.API
             /// <param name="search_WriterName">作者名を検索対象とする</param>
             public GetParameter()
             {
-                this.useGZIP = false;
+                this.useGZIP = true;
                 this.outType = OutType.json;
                 this.getItemFlag = 0;
                 this.limit = 20;

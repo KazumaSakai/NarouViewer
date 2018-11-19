@@ -26,9 +26,6 @@ namespace NarouViewer
         }
         private List<NovelDataView> novelDataViews;
 
-        private Control beforeParent;
-        private EventHandler parentSizeChangedEvent;
-
         public NovelDataListView(List<NarouAPI.NovelData> model)
         {
             this.novelDataViews = new List<NovelDataView>();
@@ -36,8 +33,6 @@ namespace NarouViewer
             this.Size = new Size(706, 444);
             this.Location = new Point(3, 180);
             this.Scroll += new ScrollEventHandler(OnScrollCallBack);
-            this.ParentChanged += new EventHandler(OnParentChanged);
-            this.parentSizeChangedEvent = new EventHandler(OnParentSizeChanged);
 
             //  model
             this.model = model;
@@ -85,21 +80,6 @@ namespace NarouViewer
             {
                 novelDataViews[i].model = model[i];
             }
-        }
-
-        private void OnParentChanged(object sender, EventArgs e)
-        {
-            if(beforeParent != null)
-            {
-                beforeParent.SizeChanged -= parentSizeChangedEvent;
-            }
-
-            this.OnParentSizeChanged(sender, e);
-            this.Parent.SizeChanged += parentSizeChangedEvent;
-            this.beforeParent = this.Parent;
-        }
-        private void OnParentSizeChanged(object sender, EventArgs e)
-        {
         }
         private void OnScrollCallBack(object sender, ScrollEventArgs e)
         {

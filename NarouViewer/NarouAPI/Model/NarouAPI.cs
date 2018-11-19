@@ -951,7 +951,6 @@ namespace NarouViewer.API
                 HttpResponseMessage response = await client.GetAsync(url);
                 if(response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("endget");
                     if(getParameter.useGZIP)
                     {
                         using (var ms = await response.Content.ReadAsStreamAsync())

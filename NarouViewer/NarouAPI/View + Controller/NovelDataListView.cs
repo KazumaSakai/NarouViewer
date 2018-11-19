@@ -33,8 +33,8 @@ namespace NarouViewer
         {
             this.novelDataViews = new List<NovelDataView>();
 
-            this.AutoScroll = true;
-            this.Size = new Size(720, 444);
+            this.Size = new Size(706, 444);
+            this.Location = new Point(3, 180);
             this.Scroll += new ScrollEventHandler(OnScrollCallBack);
             this.ParentChanged += new EventHandler(OnParentChanged);
             this.parentSizeChangedEvent = new EventHandler(OnParentSizeChanged);
@@ -45,13 +45,20 @@ namespace NarouViewer
 
         private void ChangeModel()
         {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)ChangeModel);
+                return;
+            }
+
             if (model == null) return;
 
             model.RemoveAll((a) => a == null || a.title == null || a.keyword == null || a.userid == 0);
+            this.Size = new Size(this.Width, 262 * model.Count + 6);
 
             int needModelCount = model.Count - novelDataViews.Count;
 
-            if(needModelCount > 0)
+            if (needModelCount > 0)
             {
                 for (int i = 0; i < needModelCount; i++)
                 {
@@ -59,10 +66,11 @@ namespace NarouViewer
                     view.Location = new Point(3, 3 + (novelDataViews.Count * 262));
 
                     this.Controls.Add(view);
+
                     this.novelDataViews.Add(view);
                 }
             }
-            else if(needModelCount < 0)
+            else if (needModelCount < 0)
             {
                 for (int i = 0; i < -needModelCount; i++)
                 {
@@ -92,7 +100,6 @@ namespace NarouViewer
         }
         private void OnParentSizeChanged(object sender, EventArgs e)
         {
-            this.Size = new Size(this.Parent.Size.Width - 18, this.Parent.Size.Height - 42);
         }
         private void OnScrollCallBack(object sender, ScrollEventArgs e)
         {

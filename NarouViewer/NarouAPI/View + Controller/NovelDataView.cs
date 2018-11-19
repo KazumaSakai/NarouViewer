@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
@@ -115,6 +116,12 @@ namespace NarouViewer
 
         private void ChangeModel()
         {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)ChangeModel);
+                return;
+            }
+
             if (model == null) return;
 
             foreach (IChangeModel item in iChangeModels)

@@ -33,11 +33,13 @@
             // 
             // Form1
             // 
+            this.AutoScroll = true;
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(OnScroll);
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(724, 450);
-            this.MaximumSize = new System.Drawing.Size(740, 1080);
-            this.MinimumSize = new System.Drawing.Size(740, 400);
+            this.ClientSize = new System.Drawing.Size(750, 450);
+            this.MaximumSize = new System.Drawing.Size(750, 1080);
+            this.MinimumSize = new System.Drawing.Size(750, 400);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -5,11 +5,40 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using NarouViewer.API;
 
 namespace NarouViewer
 {
     public class NarouSearchView : Panel
     {
+        private NarouAPI.GetParameter _model;
+        public NarouAPI.GetParameter model
+        {
+            set
+            {
+                _model = value;
+                ChangeModel();
+
+            }
+            get
+            {
+                return _model;
+            }
+        }
+
+        private NovelDataListView _listModel;
+        public NovelDataListView listModel
+        {
+            set
+            {
+                _listModel = value;
+            }
+            get
+            {
+                return _listModel;
+            }
+        }
+
         private SearchLabel searchLabel;
         private SearchTextBox searchTextBox;
         private ChoiceSearchWordButton choiceSearchWordButton;
@@ -21,7 +50,7 @@ namespace NarouViewer
         private ChoiceDetailOption choiceDetailOption;
         private SearchButton searchButton;
 
-        public NarouSearchView()
+        public NarouSearchView(NarouAPI.GetParameter model, NovelDataListView listModel)
         {
             this.Location = new Point(12, 12);
             this.Name = "searchPanel";
@@ -37,6 +66,34 @@ namespace NarouViewer
             this.Controls.Add(this.choiceGenreButton = new ChoiceGenreButton());
             this.Controls.Add(this.choiceDetailOption = new ChoiceDetailOption());
             this.Controls.Add(this.searchButton = new SearchButton());
+
+            this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
+
+            this.listModel = listModel;
+            this.model = model;
+        }
+
+        private void ChangeModel()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)ChangeModel);
+                return;
+            }
+
+            if (model == null) return;
+
+            model.word = searchTextBox.Text;
+            model.notWord = exclusionTextBox.Text;
+        }
+        public void Search()
+        {
+            if (listModel == null) return;
+
+            Task.Run(async () =>
+            {
+                listModel.model = await NarouAPI.Get(model);
+            });
         }
 
         private class SearchLabel : Label

@@ -22,14 +22,13 @@ namespace NarouViewer
 
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void OnScroll(object sender, ScrollEventArgs e)
         {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
+            if(e.ScrollOrientation == ScrollOrientation.VerticalScroll)
+            {
+                this.VerticalScroll.Value = e.NewValue;
+            }
+            this.Update();
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using YamlDotNet;
+using Newtonsoft.Json;
 
 using NarouViewer.API;
 
@@ -12,6 +14,10 @@ namespace NarouViewer
         [STAThread]
         static void Main()
         {
+            //  Form
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
 
             //  Set Parameter
             NarouAPI.GetParameter parameter = new NarouAPI.GetParameter();
@@ -19,15 +25,14 @@ namespace NarouViewer
             parameter.useGZIP = true;
             parameter.outType = NarouAPI.GetParameter.OutType.json;
 
-            //  Get
-            List<NarouAPI.NovelData> list = NarouAPI.Get(parameter).Result;
+            NovelDataListView listView = new NovelDataListView(new List<NarouAPI.NovelData>());
+            NarouSearchView searchView = new NarouSearchView(parameter, listView);
+            searchView.Search();
 
             //  Form
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
             Form1 form = new Form1();
-            form.Controls.Add(new NovelDataListView(list));
-
+            form.Controls.Add(searchView);
+            form.Controls.Add(listView);
             Application.Run(form);
         }
     }

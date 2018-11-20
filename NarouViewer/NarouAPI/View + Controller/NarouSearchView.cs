@@ -53,6 +53,7 @@ namespace NarouViewer
 
         public NarouSearchView(NarouAPI.GetParameter model)
         {
+            this.DoubleBuffered = true;
             this.Location = new Point(3, 3);
             this.Name = "searchPanel";
 
@@ -67,11 +68,11 @@ namespace NarouViewer
             this.Controls.Add(this.choiceDetailOption = new ChoiceDetailOption());
             this.Controls.Add(this.searchButton = new SearchButton());
             this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
-            //this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
+            this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
             this.Size = new Size(706, 185 + listModel.Size.Height);
 
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
-            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => OpenSearchKeywordPanel());
+            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => SearchKeywordButton_Push());
 
             this.model = model;
             this.Search();
@@ -106,9 +107,33 @@ namespace NarouViewer
                 }));
             });
         }
-        public void OpenSearchKeywordPanel()
+
+        private Timer animationTimer;
+        private bool openSeachKeywordTabs = false;
+        public void SearchKeywordButton_Push()
         {
-            
+            if (animationTimer != null)
+            {
+                animationTimer.Stop();
+            }
+            openSeachKeywordTabs = !openSeachKeywordTabs;
+
+            animationTimer = Animator.Animate(10, 20, (frame, frequency) =>
+            {
+                if (!Visible || IsDisposed) return false;
+
+
+                double value = (double)frame / (double)frequency;
+
+                Size size = searchKeywordTabs.defaultSize;
+                int height = (int)(size.Height * ((openSeachKeywordTabs ? value : 1.0d - value)));
+
+                searchKeywordTabs.Size = new Size(size.Width, height);
+                searchButton.Location = new Point(100, 122 + height);
+                listModel.Location = new Point(3, 180 + height);
+
+                return true;
+            });
         }
 
         private class SearchLabel : Label
@@ -232,6 +257,8 @@ namespace NarouViewer
 
         private class SearchKeywordTabs : TabControl
         {
+            public Size defaultSize;
+
             private OfficialKeywordTabPage officialKeywordTabPage;
             private RecommendKeywordTabPage recommendKeywordTabPage;
             private ReplayKeywordTabPage replayKeywordTabPage;
@@ -252,10 +279,11 @@ namespace NarouViewer
             public SearchKeywordTabs(NarouAPI.GetParameter model)
             {
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(12, 12);
+                this.Location = new Point(12, 120);
                 this.Name = "searchKeywordTabs";
                 this.SelectedIndex = 0;
-                this.Size = new Size(690, 524);
+                this.Size = new Size(690, 0);
+                this.defaultSize = new Size(690, 524);
 
                 this.Controls.Add(this.officialKeywordTabPage = new OfficialKeywordTabPage());
                 this.Controls.Add(this.recommendKeywordTabPage = new RecommendKeywordTabPage());
@@ -303,6 +331,7 @@ namespace NarouViewer
 
                 public OfficialKeywordTabPage()
                 {
+                    this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
                     this.Name = "officialKeywordTabPage";
                     this.Size = new Size(682, 494);
@@ -319,6 +348,7 @@ namespace NarouViewer
             {
                 public RecommendKeywordTabPage()
                 {
+                    this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
                     this.Name = "recommendKeywordTabPage";
                     this.Size = new Size(682, 494);
@@ -330,6 +360,7 @@ namespace NarouViewer
             {
                 public ReplayKeywordTabPage()
                 {
+                    this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
                     this.Name = "replayKeywordTab";
                     this.Size = new Size(682, 494);
@@ -347,6 +378,7 @@ namespace NarouViewer
                     this.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24.02985F));
                     this.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 75.97015F));
 
+                    this.DoubleBuffered = true;
                     this.Location = new Point(8, 40);
                     this.Name = "tableLayoutPanel";
                     this.RowCount = words.Length;

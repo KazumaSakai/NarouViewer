@@ -49,6 +49,7 @@ namespace NarouViewer
         private ChoiceGenreButton choiceGenreButton;
         private ChoiceDetailOption choiceDetailOption;
         private SearchButton searchButton;
+        private SearchKeywordTabs searchKeywordTabs;
 
         public NarouSearchView(NarouAPI.GetParameter model)
         {
@@ -66,9 +67,11 @@ namespace NarouViewer
             this.Controls.Add(this.choiceDetailOption = new ChoiceDetailOption());
             this.Controls.Add(this.searchButton = new SearchButton());
             this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
+            //this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
             this.Size = new Size(706, 185 + listModel.Size.Height);
 
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
+            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => OpenSearchKeywordPanel());
 
             this.model = model;
             this.Search();
@@ -87,6 +90,7 @@ namespace NarouViewer
             model.word = searchTextBox.Text;
             model.notWord = exclusionTextBox.Text;
         }
+
         public void Search()
         {
             if (listModel == null) return;
@@ -101,6 +105,10 @@ namespace NarouViewer
                     this.Size = new Size(706, 185 + listModel.Size.Height);
                 }));
             });
+        }
+        public void OpenSearchKeywordPanel()
+        {
+            
         }
 
         private class SearchLabel : Label
@@ -219,6 +227,171 @@ namespace NarouViewer
                 this.Size = new Size(500, 33);
                 this.Text = "検索";
                 this.UseVisualStyleBackColor = true;
+            }
+        }
+
+        private class SearchKeywordTabs : TabControl
+        {
+            private OfficialKeywordTabPage officialKeywordTabPage;
+            private RecommendKeywordTabPage recommendKeywordTabPage;
+            private ReplayKeywordTabPage replayKeywordTabPage;
+
+            private NarouAPI.GetParameter _model;
+            public NarouAPI.GetParameter model
+            {
+                set
+                {
+                    _model = value;
+                }
+                get
+                {
+                    return _model;
+                }
+            }
+
+            public SearchKeywordTabs(NarouAPI.GetParameter model)
+            {
+                this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
+                this.Location = new Point(12, 12);
+                this.Name = "searchKeywordTabs";
+                this.SelectedIndex = 0;
+                this.Size = new Size(690, 524);
+
+                this.Controls.Add(this.officialKeywordTabPage = new OfficialKeywordTabPage());
+                this.Controls.Add(this.recommendKeywordTabPage = new RecommendKeywordTabPage());
+                this.Controls.Add(this.replayKeywordTabPage = new ReplayKeywordTabPage());
+
+                //  Model
+                this.model = model;
+            }
+
+            private class OfficialKeywordTabPage : TabPage
+            {
+                private Label title;
+                private Label description;
+                private KeywordsTable keywordsTable;
+
+                private static string[][] officialKeywords = new string[][]
+                {
+                    new string[]
+                    {
+                        "作品傾向","ギャグ","シリアス","ほのぼの","ダーク"
+                    },
+                    new string[]
+                    {
+                        "登場キャラクター","男主人公", "女主人公", "人外",
+                        "魔王", "勇者"
+                    },
+                    new string[]
+                    {
+                        "舞台","和風","西洋","中華","学園"
+                    },
+                    new string[]
+                    {
+                        "時代設定","戦国","幕末","明治/大正","昭和","平成",
+                        "古代","中世","近世","近代","現代","未来"
+                    },
+                    new string[]
+                    {
+                        "要素","ロボット", "アンドロイド","職業もの","ハーレム",
+                        "逆ハーレム", "偶像劇", "チート", "内政", "魔法", "冒険",
+                        "ミリタリー", "日常", "ハッピーエンド", "バッドエンド", "グルメ",
+                        "青春", "ゲーム", "超能力", "タイムトラベル", "ダンジョン",
+                        "パラレルワールド","タイムリープ"
+                    }
+                };
+
+                public OfficialKeywordTabPage()
+                {
+                    this.Location = new Point(4, 26);
+                    this.Name = "officialKeywordTabPage";
+                    this.Size = new Size(682, 494);
+                    this.TabIndex = 0;
+                    this.Text = "公式キーワード";
+                    this.UseVisualStyleBackColor = true;
+
+                    this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 6)));
+                    this.Controls.Add(this.description = new DefaultLabel("ワードをチェックすると、検索ボックスに自動で入力されます。検索ワードは直接入力も可能です。", "description", new Point(11, 6)));
+                    this.Controls.Add(this.keywordsTable = new KeywordsTable(officialKeywords));             
+                }
+            }
+            private class RecommendKeywordTabPage : TabPage
+            {
+                public RecommendKeywordTabPage()
+                {
+                    this.Location = new Point(4, 26);
+                    this.Name = "recommendKeywordTabPage";
+                    this.Size = new Size(682, 494);
+                    this.Text = "おすすめキーワード";
+                    this.UseVisualStyleBackColor = true;
+                }
+            }
+            private class ReplayKeywordTabPage : TabPage
+            {
+                public ReplayKeywordTabPage()
+                {
+                    this.Location = new Point(4, 26);
+                    this.Name = "replayKeywordTab";
+                    this.Size = new Size(682, 494);
+                    this.Text = "リプレイ用キーワード";
+                    this.UseVisualStyleBackColor = true;
+                }
+            }
+
+            private class KeywordsTable : TableLayoutPanel
+            {
+                public KeywordsTable(string[][] words)
+                {
+                    this.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+                    this.ColumnCount = 2;
+                    this.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 24.02985F));
+                    this.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 75.97015F));
+
+                    this.Location = new Point(8, 40);
+                    this.Name = "tableLayoutPanel";
+                    this.RowCount = words.Length;
+                    for (int i = 0; i < words.Length; i++)
+                    {
+                        string[] lineWords = words[i];
+
+                        this.RowStyles.Add(new RowStyle(SizeType.Absolute, 6 + (22 * lineWords.Length - 1)));
+                        this.Controls.Add(new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3)), 0, i);
+                        this.Controls.Add(new WordCheckBoxsPanel(lineWords), 1, i);
+                    }
+                    this.Size = new Size(676, 439);
+                }
+
+                private class WordCheckBoxsPanel : Panel
+                {
+                    WordCheckBox[] wordCheckBox;
+                    public WordCheckBoxsPanel(string[] words)
+                    {
+                        wordCheckBox = new WordCheckBox[words.Length];
+                        for (int i = 1; i < words.Length; i++)
+                        {
+                            this.Controls.Add(this.wordCheckBox[i] = new WordCheckBox(words[i], i));
+                        }
+
+                        this.Dock = DockStyle.Fill;
+                        this.Name = "CheckBoxsPanel";
+                        this.Size = new Size(507, 6 + (22 * words.Length - 1));
+                    }
+
+                    private class WordCheckBox : CheckBox
+                    {
+                        public WordCheckBox(string word, int index)
+                        {
+                            int x = index % 3;
+                            int y = (index - x) / 3;
+
+                            this.Location = new Point(3 + (168 * x), 3 + (22 * y));
+                            this.Size = new Size(165, 22);
+                            this.Text = word;
+                            this.Name = "WordCheckBox " + word;
+                            this.UseVisualStyleBackColor = true;
+                        }
+                    }
+                }
             }
         }
     }

@@ -286,6 +286,7 @@ namespace NarouViewer
                             break;
 
                         case 2:
+                            s = replayKeywordTabPage.defaultSize;
                             break;
                     }
                     AnimationChangeSize(new Size(690, 30 + s.Height));
@@ -295,19 +296,20 @@ namespace NarouViewer
                 this.model = model;
             }
 
-            private Timer animationTimer;
             private bool isOpen = false;
             private int frame = 20;
+
+            private Timer timer1;
             public void Open()
             {
                 isOpen = !isOpen;
-                if (animationTimer != null)
+                if (timer1 != null)
                 {
-                    animationTimer.Stop();
+                    timer1.Stop();
                 }
 
                 int startFrame = 20 - this.frame;
-                animationTimer = Animator.Animate(10, this.frame, (frame, frequency) =>
+                timer1 = Animator.Animate(10, this.frame, (frame, frequency) =>
                 {
                     if (!Visible || IsDisposed) return false;
                     this.frame = startFrame + frame;
@@ -316,6 +318,7 @@ namespace NarouViewer
 
                     int height = (int)(defaultSize.Height * ((isOpen ? value : 1.0d - value)));
                     this.Size = new Size(defaultSize.Width, height);
+                    timer1.Disposed += new EventHandler((object sender, EventArgs e) => timer1 = null);
 
                     return true;
                 });
@@ -324,10 +327,8 @@ namespace NarouViewer
             private Timer timer2;
             public void AnimationChangeSize(Size newSize)
             {
-                if (timer2 != null)
-                {
-                    timer2.Stop();
-                }
+                if (timer1 != null) return;
+                if (timer2 != null) timer2.Stop();
 
                 Size oldSize = defaultSize;
                 int needFrame = Math.Abs(newSize.Height - oldSize.Height) / 30;
@@ -341,6 +342,7 @@ namespace NarouViewer
                     this.Size = this.defaultSize;
                     return true;
                 });
+                timer2.Disposed += new EventHandler((object sender, EventArgs e) => timer2 = null);
             }
 
             private class OfficialKeywordTabPage : TabPage
@@ -510,6 +512,27 @@ namespace NarouViewer
             }
             private class ReplayKeywordTabPage : TabPage
             {
+                private Label replayLabel;
+                private KeywordsTable replayTable;
+
+                public Size defaultSize;
+
+                private static readonly string[][] replayKeywords = new string[][]
+                {
+                    new string[]
+                    {
+                        "リプレイ用", "ソード・ワールド2.0"
+                    },
+                    new string[]
+                    {
+                        "キーワード", "アリアンロッドRPG2E", "ダブルクロス The 3rd Edition", "メタリックガーディアンRPG",
+                        " グランクレストRPG ", "ガーデンオーダー", "ナイトウィザード The 3rd Edition", "アルシャードセイヴァーRPG",
+                        "トーキョーN◎VA THE AXLERATION", "ドラゴンアームズ改", "モノトーンミュージアムRPG", "ブレイド・オブ・アルカナ",
+                        "セブン＝フォートレス メビウス", "バトルガールプロデュースＲＰＧ エースキラージーン", "バトルガールプロデュースＲＰＧ エースキラージーン",
+                        "片道勇者TRPG", "神話創世RPG アマデウス", "デッドラインヒーローズRPG", "常夜国騎士譚RPG ドラクルージュ", "巨獣討伐RPG コロッサルハンター"
+                    },
+                };
+
                 public ReplayKeywordTabPage()
                 {
                     this.DoubleBuffered = true;
@@ -518,11 +541,16 @@ namespace NarouViewer
                     this.Size = new Size(682, 494);
                     this.Text = "リプレイ用キーワード";
                     this.UseVisualStyleBackColor = true;
+
+                    this.Controls.Add(this.replayLabel = new DefaultLabel("リプレイ用キーワード", "love", new Point(11, 15)));
+                    this.Controls.Add(this.replayTable = new KeywordsTable(replayKeywords, 1) { Location = new Point(8, replayLabel.Location.Y + replayLabel.Height + 3) });
+
+                    this.defaultSize = new Size(682, replayTable.Location.Y + replayTable.Height + 8);
                 }
             }
             private class KeywordsTable : TableLayoutPanel
             {
-                public KeywordsTable(string[][] words)
+                public KeywordsTable(string[][] words, int line = 3)
                 {
                     this.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
                     this.ColumnCount = 2;
@@ -539,14 +567,15 @@ namespace NarouViewer
                     {
                         string[] lineWords = words[i];
 
-                        int height = 8 + (22 * (int)Math.Ceiling((lineWords.Length - 1) / 3d));
+                        int height = 8 + (22 * (int)Math.Ceiling((lineWords.Length - 1) / (double)line));
                         totalHeight += (height + 1);
 
                         this.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
                         Label label = new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3));
                         label.Padding = new Padding(3);
                         this.Controls.Add(label, 0, i);
-                        this.Controls.Add(new WordCheckBoxsPanel(lineWords), 1, i);
+
+                        this.Controls.Add(new WordCheckBoxsPanel(lineWords, line), 1, i);
                     }
                     this.Size = new Size(663, 1 + totalHeight);
                 }
@@ -554,12 +583,16 @@ namespace NarouViewer
                 private class WordCheckBoxsPanel : Panel
                 {
                     WordCheckBox[] wordCheckBox;
-                    public WordCheckBoxsPanel(string[] words)
+                    public WordCheckBoxsPanel(string[] words, int line)
                     {
                         wordCheckBox = new WordCheckBox[words.Length];
                         for (int i = 1; i < words.Length; i++)
                         {
-                            this.Controls.Add(this.wordCheckBox[i] = new WordCheckBox(words[i], i - 1));
+                            this.Controls.Add(this.wordCheckBox[i] = new WordCheckBox(words[i]));
+
+                            int x = (i - 1) % line;
+                            int y = ((i - 1) - x) / line;
+                            this.wordCheckBox[i].Location = new Point(3 + (168 * x), 2 + (22 * y));
                         }
 
                         this.Dock = DockStyle.Fill;
@@ -569,12 +602,8 @@ namespace NarouViewer
 
                     private class WordCheckBox : CheckBox
                     {
-                        public WordCheckBox(string word, int index)
+                        public WordCheckBox(string word)
                         {
-                            int x = index % 3;
-                            int y = (index - x) / 3;
-
-                            this.Location = new Point(3 + (168 * x), 2 + (22 * y));
                             this.Size = new Size(165, 22);
                             this.Text = word;
                             this.Name = "WordCheckBox " + word;

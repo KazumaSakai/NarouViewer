@@ -18,6 +18,7 @@ namespace NarouViewer
                 if (callback(frame, frequency) == false || frame >= frequency)
                 {
                     timer.Stop();
+                    timer.Dispose();
                 }
                 frame++;
             };

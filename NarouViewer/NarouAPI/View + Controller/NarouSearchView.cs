@@ -69,7 +69,6 @@ namespace NarouViewer
             this.Controls.Add(this.searchButton = new SearchButton());
             this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
             this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
-            this.Size = new Size(706, 185 + listModel.Size.Height);
 
             this.searchKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
@@ -77,6 +76,7 @@ namespace NarouViewer
 
             this.model = model;
             this.Search();
+            this.UpdateSize();
         }
 
         private void ChangeModel()
@@ -112,7 +112,7 @@ namespace NarouViewer
 
                 Invoke((Action)(() =>
                 {
-                    this.Size = new Size(706, 185 + listModel.Size.Height);
+                    this.UpdateSize();
                 }));
             });
         }
@@ -120,9 +120,10 @@ namespace NarouViewer
         {
             Size size = searchKeywordTabs.Size;
 
-            searchKeywordTabs.Size = new Size(size.Width, size.Height);
-            searchButton.Location = new Point(100, 122 + size.Height);
-            listModel.Location = new Point(3, 180 + size.Height);
+            this.searchKeywordTabs.Size = new Size(size.Width, size.Height);
+            this.searchButton.Location = new Point(100, 122 + size.Height);
+            this.listModel.Location = new Point(3, 180 + size.Height);
+            this.Size = new Size(706, 185 + listModel.Size.Height + size.Height);
         }
 
         private class SearchLabel : Label

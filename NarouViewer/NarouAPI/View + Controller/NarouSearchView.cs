@@ -71,9 +71,9 @@ namespace NarouViewer
             this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
             this.Size = new Size(706, 185 + listModel.Size.Height);
 
-            this.searchKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => AnimationChangeSize());
+            this.searchKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
-            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => searchKeywordTabs.Open());
+            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => searchKeywordTabs.AnimationOpen());
 
             this.model = model;
             this.Search();
@@ -91,6 +91,14 @@ namespace NarouViewer
 
             model.word = searchTextBox.Text;
             model.notWord = exclusionTextBox.Text;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (string keyword in searchKeywordTabs.searchKeywordList)
+            {
+                sb.Append(" ");
+                sb.Append(keyword);
+            }
+            model.word += sb.ToString();
         }
 
         public void Search()
@@ -108,8 +116,7 @@ namespace NarouViewer
                 }));
             });
         }
-
-        public void AnimationChangeSize()
+        public void UpdateSize()
         {
             Size size = searchKeywordTabs.Size;
 
@@ -239,8 +246,6 @@ namespace NarouViewer
 
         private class SearchKeywordTabs : TabControl
         {
-            private Size defaultSize;
-
             private OfficialKeywordTabPage officialKeywordTabPage;
             private RecommendKeywordTabPage recommendKeywordTabPage;
             private ReplayKeywordTabPage replayKeywordTabPage;
@@ -258,21 +263,36 @@ namespace NarouViewer
                 }
             }
 
+            public List<string> searchKeywordList;
+
             public SearchKeywordTabs(NarouAPI.GetParameter model)
             {
+                this.searchKeywordList = new List<string>();
+
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
                 this.Location = new Point(12, 120);
                 this.Name = "searchKeywordTabs";
                 this.SelectedIndex = 0;
                 this.Size = new Size(690, 0);
 
-                this.Controls.Add(this.officialKeywordTabPage = new OfficialKeywordTabPage());
-                this.Controls.Add(this.recommendKeywordTabPage = new RecommendKeywordTabPage());
-                this.Controls.Add(this.replayKeywordTabPage = new ReplayKeywordTabPage());
+                this.Controls.Add(this.officialKeywordTabPage = new OfficialKeywordTabPage(searchKeywordList));
+                this.Controls.Add(this.recommendKeywordTabPage = new RecommendKeywordTabPage(searchKeywordList));
+                this.Controls.Add(this.replayKeywordTabPage = new ReplayKeywordTabPage(searchKeywordList));
 
-                Size size = officialKeywordTabPage.defaultSize;
-                defaultSize = new Size(690, 30 + size.Height);
                 this.SelectedIndexChanged += new EventHandler((object sender, EventArgs e) =>
+                {
+                    AnimationSizeUpdate();
+                });
+
+                //  Model
+                this.model = model;
+            }
+
+            private bool isOpen = false;
+            private Timer timer;
+            private Size requestSize
+            {
+                get
                 {
                     Size s = Size.Empty;
                     switch (SelectedIndex)
@@ -289,68 +309,54 @@ namespace NarouViewer
                             s = replayKeywordTabPage.defaultSize;
                             break;
                     }
-                    AnimationChangeSize(new Size(690, 30 + s.Height));
-                });
-
-                //  Model
-                this.model = model;
+                    return new Size(690, 30 + s.Height);
+                }
             }
-
-            private bool isOpen = false;
-            private int frame = 20;
-
-            private Timer timer1;
-            public void Open()
+            public void AnimationOpen()
             {
                 isOpen = !isOpen;
-                if (timer1 != null)
-                {
-                    timer1.Stop();
-                }
-
-                int startFrame = 20 - this.frame;
-                timer1 = Animator.Animate(10, this.frame, (frame, frequency) =>
-                {
-                    if (!Visible || IsDisposed) return false;
-                    this.frame = startFrame + frame;
-
-                    double value = (double)this.frame / (double)frequency;
-
-                    int height = (int)(defaultSize.Height * ((isOpen ? value : 1.0d - value)));
-                    this.Size = new Size(defaultSize.Width, height);
-                    timer1.Disposed += new EventHandler((object sender, EventArgs e) => timer1 = null);
-
-                    return true;
-                });
+                AnimationSizeUpdate();
             }
-
-            private Timer timer2;
-            public void AnimationChangeSize(Size newSize)
+            private void AnimationSizeUpdate()
             {
-                if (timer1 != null) return;
-                if (timer2 != null) timer2.Stop();
+                AnimationChangeSize(isOpen ? requestSize : new Size(requestSize.Width, 0));
+            }
+            private void AnimationChangeSize(Size newSize)
+            {
+                if (timer != null) timer.Stop();
 
-                Size oldSize = defaultSize;
+                Size oldSize = this.Size;
                 int needFrame = Math.Abs(newSize.Height - oldSize.Height) / 30;
-                timer2 = Animator.Animate(10, Math.Max(1, needFrame), (frame, frequency) =>
+                timer = Animator.Animate(10, Math.Max(1, needFrame), (frame, frequency) =>
                 {
                     if (!Visible || IsDisposed) return false;
 
                     double value = (double)frame / (double)frequency;
                     
-                    this.defaultSize = new Size(oldSize.Width + (int)((newSize.Width - oldSize.Width) * value), oldSize.Height + (int)((newSize.Height - oldSize.Height) * value));
-                    this.Size = this.defaultSize;
+                    this.Size = new Size(oldSize.Width + (int)((newSize.Width - oldSize.Width) * value), oldSize.Height + (int)((newSize.Height - oldSize.Height) * value));
                     return true;
                 });
-                timer2.Disposed += new EventHandler((object sender, EventArgs e) => timer2 = null);
+                timer.Disposed += new EventHandler((object sender, EventArgs e) => timer = null);
             }
 
             private class OfficialKeywordTabPage : TabPage
             {
+                private List<string> _model;
+                public List<string> model
+                {
+                    set
+                    {
+                        _model = value;
+                    }
+                    get
+                    {
+                        return _model;
+                    }
+                }
+
+                public Size defaultSize;
                 private Label title;
                 private KeywordsTable keywordsTable;
-                public Size defaultSize;
-
                 private static readonly string[][] officialKeywords = new string[][]
                 {
                     new string[]
@@ -381,7 +387,7 @@ namespace NarouViewer
                     }
                 };
 
-                public OfficialKeywordTabPage()
+                public OfficialKeywordTabPage(List<string> model)
                 {
                     this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
@@ -391,13 +397,30 @@ namespace NarouViewer
                     this.UseVisualStyleBackColor = true;
 
                     this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15)));
-                    this.Controls.Add(this.keywordsTable = new KeywordsTable(officialKeywords) { Location = new Point(8, title.Location.Y + title.Height + 3)});
+                    this.Controls.Add(this.keywordsTable = new KeywordsTable(officialKeywords, model) { Location = new Point(8, title.Location.Y + title.Height + 3)});
 
                     this.defaultSize = new Size(682, keywordsTable.Location.Y + keywordsTable.Height + 8);
+
+                    //  Model
+                    this.model = model;
                 }
             }
             private class RecommendKeywordTabPage : TabPage
             {
+                private List<string> _model;
+                public List<string> model
+                {
+                    set
+                    {
+                        _model = value;
+                    }
+                    get
+                    {
+                        return _model;
+                    }
+                }
+
+                public Size defaultSize;
                 private Label loveTitle;
                 private Label fantasyTitle;
                 private Label literatureTitle;
@@ -406,8 +429,6 @@ namespace NarouViewer
                 private KeywordsTable fantasyTable;
                 private KeywordsTable literatureTable;
                 private KeywordsTable sfTable;
-                public Size defaultSize;
-
                 private static readonly string[][] loveKeywords = new string[][]
                 {
                     new string[]
@@ -487,7 +508,7 @@ namespace NarouViewer
                     }
                 };
 
-                public RecommendKeywordTabPage()
+                public RecommendKeywordTabPage(List<string> model)
                 {
                     this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
@@ -496,27 +517,41 @@ namespace NarouViewer
                     this.UseVisualStyleBackColor = true;
 
                     this.Controls.Add(this.loveTitle = new DefaultLabel("恋愛", "love", new Point(11, 15)));
-                    this.Controls.Add(this.loveTable = new KeywordsTable(loveKeywords) { Location = new Point(8, loveTitle.Location.Y + loveTitle.Height + 3) });
+                    this.Controls.Add(this.loveTable = new KeywordsTable(loveKeywords, model) { Location = new Point(8, loveTitle.Location.Y + loveTitle.Height + 3) });
 
                     this.Controls.Add(this.fantasyTitle = new DefaultLabel("ファンタジー", "fantasy", new Point(11, 150)) { Location = new Point(8, loveTable.Location.Y + loveTable.Height + 15) });
-                    this.Controls.Add(this.fantasyTable = new KeywordsTable(fantasyKeywords) { Location = new Point(8, fantasyTitle.Location.Y + fantasyTitle.Height + 3) });
+                    this.Controls.Add(this.fantasyTable = new KeywordsTable(fantasyKeywords, model) { Location = new Point(8, fantasyTitle.Location.Y + fantasyTitle.Height + 3) });
 
                     this.Controls.Add(this.literatureTitle = new DefaultLabel("文芸", "literature", new Point(11, 240)) { Location = new Point(8, fantasyTable.Location.Y + fantasyTable.Height + 15) });
-                    this.Controls.Add(this.literatureTable = new KeywordsTable(literatureKeywords) { Location = new Point(8, literatureTitle.Location.Y + literatureTitle.Height + 3) });
+                    this.Controls.Add(this.literatureTable = new KeywordsTable(literatureKeywords, model) { Location = new Point(8, literatureTitle.Location.Y + literatureTitle.Height + 3) });
 
                     this.Controls.Add(this.sfTitle = new DefaultLabel("SF", "sf", new Point(11, 520)) { Location = new Point(8, literatureTable.Location.Y + literatureTable.Height + 15) });
-                    this.Controls.Add(this.sfTable = new KeywordsTable(sfKeywords) { Location = new Point(8, sfTitle.Location.Y + sfTitle.Height + 3) });
+                    this.Controls.Add(this.sfTable = new KeywordsTable(sfKeywords, model) { Location = new Point(8, sfTitle.Location.Y + sfTitle.Height + 3) });
 
                     this.defaultSize = new Size(682, sfTable.Location.Y + sfTable.Height + 8);
+
+                    //  Model
+                    this.model = model;
                 }
             }
             private class ReplayKeywordTabPage : TabPage
             {
-                private Label replayLabel;
-                private KeywordsTable replayTable;
+                private List<string> _model;
+                public List<string> model
+                {
+                    set
+                    {
+                        _model = value;
+                    }
+                    get
+                    {
+                        return _model;
+                    }
+                }
 
                 public Size defaultSize;
-
+                private Label replayLabel;
+                private KeywordsTable replayTable;
                 private static readonly string[][] replayKeywords = new string[][]
                 {
                     new string[]
@@ -533,7 +568,7 @@ namespace NarouViewer
                     },
                 };
 
-                public ReplayKeywordTabPage()
+                public ReplayKeywordTabPage(List<string> model)
                 {
                     this.DoubleBuffered = true;
                     this.Location = new Point(4, 26);
@@ -543,14 +578,31 @@ namespace NarouViewer
                     this.UseVisualStyleBackColor = true;
 
                     this.Controls.Add(this.replayLabel = new DefaultLabel("リプレイ用キーワード", "love", new Point(11, 15)));
-                    this.Controls.Add(this.replayTable = new KeywordsTable(replayKeywords, 1) { Location = new Point(8, replayLabel.Location.Y + replayLabel.Height + 3) });
+                    this.Controls.Add(this.replayTable = new KeywordsTable(replayKeywords, model, 1) { Location = new Point(8, replayLabel.Location.Y + replayLabel.Height + 3) });
 
                     this.defaultSize = new Size(682, replayTable.Location.Y + replayTable.Height + 8);
+
+                    //  Model
+                    this.model = model;
                 }
             }
+
             private class KeywordsTable : TableLayoutPanel
             {
-                public KeywordsTable(string[][] words, int line = 3)
+                private List<string> _model;
+                public List<string> model
+                {
+                    set
+                    {
+                        _model = value;
+                    }
+                    get
+                    {
+                        return _model;
+                    }
+                }
+
+                public KeywordsTable(string[][] words, List<string> model, int line = 3)
                 {
                     this.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
                     this.ColumnCount = 2;
@@ -575,20 +627,37 @@ namespace NarouViewer
                         label.Padding = new Padding(3);
                         this.Controls.Add(label, 0, i);
 
-                        this.Controls.Add(new WordCheckBoxsPanel(lineWords, line), 1, i);
+                        this.Controls.Add(new WordCheckBoxsPanel(lineWords, model, line), 1, i);
                     }
                     this.Size = new Size(663, 1 + totalHeight);
+
+                    //  Model
+                    this.model = model;
                 }
 
                 private class WordCheckBoxsPanel : Panel
                 {
-                    WordCheckBox[] wordCheckBox;
-                    public WordCheckBoxsPanel(string[] words, int line)
+                    private List<string> _model;
+                    public List<string> model
                     {
-                        wordCheckBox = new WordCheckBox[words.Length];
+                        set
+                        {
+                            _model = value;
+                        }
+                        get
+                        {
+                            return _model;
+                        }
+                    }
+
+                    WordCheckBox[] wordCheckBox;
+
+                    public WordCheckBoxsPanel(string[] words, List<string> model, int line)
+                    {
+                        this.wordCheckBox = new WordCheckBox[words.Length];
                         for (int i = 1; i < words.Length; i++)
                         {
-                            this.Controls.Add(this.wordCheckBox[i] = new WordCheckBox(words[i]));
+                            this.Controls.Add(this.wordCheckBox[i] = new WordCheckBox(words[i], model));
 
                             int x = (i - 1) % line;
                             int y = ((i - 1) - x) / line;
@@ -598,16 +667,59 @@ namespace NarouViewer
                         this.Dock = DockStyle.Fill;
                         this.Name = "CheckBoxsPanel";
                         this.Size = new Size(480, 6 + (22 * words.Length - 1));
+
+                        //  Model
+                        this.model = model;
                     }
 
                     private class WordCheckBox : CheckBox
                     {
-                        public WordCheckBox(string word)
+                        private List<string> _model;
+                        public List<string> model
+                        {
+                            set
+                            {
+                                _model = value;
+                            }
+                            get
+                            {
+                                return _model;
+                            }
+                        }
+
+                        public WordCheckBox(string word, List<string> model)
                         {
                             this.Size = new Size(165, 22);
                             this.Text = word;
                             this.Name = "WordCheckBox " + word;
                             this.UseVisualStyleBackColor = true;
+
+                            this.CheckedChanged += new EventHandler((object sender, EventArgs e) => 
+                            {
+                                if(this.Checked)
+                                {
+                                    AddWord(word);
+                                }
+                                else
+                                {
+                                    RemoveWord(word);
+                                }
+                            });
+
+                            //  Model
+                            this.model = model;
+                        }
+
+                        private void AddWord(string word)
+                        {
+                            if (!model.Contains(word))
+                            {
+                                model.Add(word);
+                            }
+                        }
+                        private void RemoveWord(string word)
+                        {
+                            model.Remove(word);
                         }
                     }
                 }

@@ -52,6 +52,13 @@ namespace NarouViewer.API
             public string novelupdated_at { get; set; }
             public string updated_at { get; set; }
             public int weekly_unique { get; set; }
+            public string genre_name
+            {
+                get
+                {
+                    return NarouAPI.GetGenreName(genre);
+                }
+            }
         }
 
         /// <summary>
@@ -438,6 +445,7 @@ namespace NarouViewer.API
                 /// </summary>
                 nongenre = 1 << 20
             }
+
             /// <summary>
             /// 検索するキーワード
             /// </summary>
@@ -996,6 +1004,35 @@ namespace NarouViewer.API
             }
 
             return result;
+        }
+
+        private static Dictionary<int, string> genreDictionary = new Dictionary<int, string>()
+        {
+            { 101, "異世界〔恋愛〕" },
+            { 102, "現実世界〔恋愛〕"},
+            { 201, "ハイファンタジー〔ファンタジー〕" },
+            { 202, "ローファンタジー〔ファンタジー〕" },
+            { 301, "純文学〔文芸〕" },
+            { 302, "ヒューマンドラマ〔文芸〕" },
+            { 303, "歴史〔文芸〕" },
+            { 304, "推理〔文芸〕" },
+            { 305, "ホラー〔文芸〕" },
+            { 306, "アクション〔文芸〕" },
+            { 307, "コメディー〔文芸〕" },
+            { 401, "VRゲーム〔SF〕" },
+            { 402, "宇宙〔SF〕" },
+            { 403, "空想科学〔SF〕" },
+            { 404, "パニック〔SF〕" },
+            { 9901, "童話〔その他〕" },
+            { 9902, "詩〔その他〕" },
+            { 9903, "エッセイ〔その他〕" },
+            { 9904, "リプレイ〔その他〕" },
+            { 9999, "リプレイ〔その他〕" },
+            { 9801, "ノンジャンル〔ノンジャンル〕" },
+        };
+        public static string GetGenreName(int id)
+        {
+            return genreDictionary[id];
         }
     }
 }

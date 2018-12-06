@@ -8,28 +8,41 @@ namespace NarouViewer
 {
     public class Animator
     {
-        public static System.Windows.Forms.Timer Animate(int interval, int frequency, Func<int, int, bool> callback)
+        private static System.Windows.Forms.Timer timer;
+        private static List<(EventHandler, int, uint)> animes = new List<(EventHandler, int, uint)>();
+        private static uint nextIndex;
+
+        public static uint Animate(int frequency, Func<int, int, bool> callback)
         {
-            var timer = new System.Windows.Forms.Timer();
-            timer.Interval = interval;
-            int frame = 0;
-            timer.Tick += (sender, e) =>
+            if (timer == null)
             {
-                if (callback(frame, frequency) == false || frame >= frequency)
+                timer = new System.Windows.Forms.Timer();
+                timer.Interval = 10;
+                timer.Start();
+            }
+
+            (EventHandler, int, uint) thisAnime = (null, 0, nextIndex);
+
+            thisAnime.Item1 = (sender, e) =>
+            {
+                if (callback(thisAnime.Item2, frequency) == false || thisAnime.Item2 >= frequency)
                 {
-                    timer.Stop();
-                    timer.Dispose();
+                    EndAnime(thisAnime.Item3);
                 }
-                frame++;
+                thisAnime.Item2++;
             };
-            timer.Start();
-            return timer;
+            timer.Tick += thisAnime.Item1;
+
+            animes.Add(thisAnime);
+            nextIndex++;
+
+            return thisAnime.Item3;
         }
-        public static System.Windows.Forms.Timer Animate(int duration, Func<int, int, bool> callback)
+        public static void EndAnime(uint index)
         {
-            const int interval = 25;
-            if (duration < interval) duration = interval;
-            return Animate(25, duration / interval, callback);
+            (EventHandler, int, uint) anime = animes.Find((a) => a.Item3 == index);
+            timer.Tick -= anime.Item1;
+            animes.Remove(anime);
         }
     }
 }

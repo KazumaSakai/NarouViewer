@@ -35,8 +35,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(734, 665);
-            this.MaximumSize = new System.Drawing.Size(750, 1080);
-            this.MinimumSize = new System.Drawing.Size(750, 400);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

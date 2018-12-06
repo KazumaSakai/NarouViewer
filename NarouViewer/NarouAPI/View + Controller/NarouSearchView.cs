@@ -50,6 +50,7 @@ namespace NarouViewer
         private ChoiceDetailOption choiceDetailOption;
         private SearchButton searchButton;
         private SearchKeywordTabs searchKeywordTabs;
+        private SearchKeywordTabs exclusionKeywordTabs;
 
         public NarouSearchView(NarouAPI.GetParameter model)
         {
@@ -69,10 +70,29 @@ namespace NarouViewer
             this.Controls.Add(this.searchButton = new SearchButton());
             this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
             this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
+            this.Controls.Add(this.exclusionKeywordTabs = new SearchKeywordTabs(model));
 
             this.searchKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
+            this.exclusionKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
+
             this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
-            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => searchKeywordTabs.AnimationOpen());
+            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) => 
+            {
+                exclusionKeywordTabs.AnimationOpen(false);
+                bool isOpen = searchKeywordTabs.AnimationOpen();
+                choiceSearchWordButton.BackColor = isOpen ? Color.Aqua : Color.White;
+                choiceExclusionWordButton.BackColor = Color.White;
+            });
+            this.choiceExclusionWordButton.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                searchKeywordTabs.AnimationOpen(false);
+                bool isOpen = exclusionKeywordTabs.AnimationOpen();
+                choiceExclusionWordButton.BackColor = isOpen ? Color.Aqua : Color.White;
+                choiceSearchWordButton.BackColor = Color.White;
+            });
+
+            this.ParentChanged += new EventHandler(ChangeParent);
+            this.parentSizeChanged += new EventHandler(ParentSizeChanged);
 
             this.model = model;
             this.Search();
@@ -101,6 +121,24 @@ namespace NarouViewer
             model.word += sb.ToString();
         }
 
+        private EventHandler parentSizeChanged;
+        private Control parent;
+        private void ChangeParent(object sender, EventArgs e)
+        {
+            if (parent != null) parent.SizeChanged -= parentSizeChanged;
+            this.Parent.SizeChanged += parentSizeChanged;
+
+            this.parent = Parent;
+        }
+        private void ParentSizeChanged(object sender, EventArgs e)
+        {
+            int space_width = this.Parent.Width - this.Width;
+
+            this.SuspendLayout();
+            this.Location = new Point(space_width / 2, 3);
+            this.ResumeLayout();
+        }
+
         public void Search()
         {
             if (listModel == null) return;
@@ -118,12 +156,13 @@ namespace NarouViewer
         }
         public void UpdateSize()
         {
-            Size size = searchKeywordTabs.Size;
+            Size size = new Size(Math.Max(searchKeywordTabs.Size.Width, exclusionKeywordTabs.Size.Width), Math.Max(searchKeywordTabs.Size.Height, exclusionKeywordTabs.Size.Height));
 
-            this.searchKeywordTabs.Size = new Size(size.Width, size.Height);
+            this.SuspendLayout();
             this.searchButton.Location = new Point(100, 122 + size.Height);
             this.listModel.Location = new Point(3, 180 + size.Height);
             this.Size = new Size(706, 185 + listModel.Size.Height + size.Height);
+            this.ResumeLayout();
         }
 
         private class SearchLabel : Label
@@ -290,7 +329,6 @@ namespace NarouViewer
             }
 
             private bool isOpen = false;
-            private Timer timer;
             private Size requestSize
             {
                 get
@@ -313,9 +351,16 @@ namespace NarouViewer
                     return new Size(690, 30 + s.Height);
                 }
             }
-            public void AnimationOpen()
+            public bool AnimationOpen()
             {
                 isOpen = !isOpen;
+                AnimationSizeUpdate();
+                return isOpen;
+            }
+            public void AnimationOpen(bool open)
+            {
+                if (isOpen == open) return;
+                isOpen = open;
                 AnimationSizeUpdate();
             }
             private void AnimationSizeUpdate()
@@ -324,20 +369,19 @@ namespace NarouViewer
             }
             private void AnimationChangeSize(Size newSize)
             {
-                if (timer != null) timer.Stop();
-
                 Size oldSize = this.Size;
-                int needFrame = Math.Abs(newSize.Height - oldSize.Height) / 30;
-                timer = Animator.Animate(10, Math.Max(1, needFrame), (frame, frequency) =>
+                int needFrame = Math.Abs(newSize.Height - oldSize.Height) / 70;
+                Animator.Animate(Math.Max(1, needFrame), (frame, frequency) =>
                 {
                     if (!Visible || IsDisposed) return false;
 
                     double value = (double)frame / (double)frequency;
-                    
+
+                    this.SuspendLayout();
                     this.Size = new Size(oldSize.Width + (int)((newSize.Width - oldSize.Width) * value), oldSize.Height + (int)((newSize.Height - oldSize.Height) * value));
+                    this.ResumeLayout();
                     return true;
                 });
-                timer.Disposed += new EventHandler((object sender, EventArgs e) => timer = null);
             }
 
             private class OfficialKeywordTabPage : TabPage

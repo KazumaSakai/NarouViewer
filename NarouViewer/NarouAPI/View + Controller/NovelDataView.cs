@@ -57,7 +57,6 @@ namespace NarouViewer
 
         public NovelDataView(NarouAPI.NovelData model)
         {
-
             this.BorderStyle = BorderStyle.FixedSingle;
             this.Location = new Point(12, 12);
             this.Name = "NovelDataVC";
@@ -158,11 +157,16 @@ namespace NarouViewer
                 this.Size = new Size(125, 21);
                 this.TabStop = true;
                 this.VisitedLinkColor = Color.FromArgb(255, 128, 0);
+                this.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkClick);
 
                 //  Model
                 this.model = model;
             }
 
+            private void LinkClick(object sender, LinkLabelLinkClickedEventArgs e)
+            {
+                System.Diagnostics.Process.Start("https://ncode.syosetu.com/" + model.ncode + "/");
+            }
             private void ChangeModel()
             {
                 if (model == null) return;
@@ -266,9 +270,14 @@ namespace NarouViewer
                 this.Name = "WriteLink";
                 this.Size = new Size(56, 16);
                 this.TabStop = true;
+                this.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkClick);
 
                 //  model
                 this.model = model;
+            }
+            private void LinkClick(object sender, LinkLabelLinkClickedEventArgs e)
+            {
+                System.Diagnostics.Process.Start("https://mypage.syosetu.com/" + model.userid + "/");
             }
             private void ChangeModel()
             {
@@ -374,15 +383,20 @@ namespace NarouViewer
                 this.Name = "GenreLink";
                 this.Size = new Size(492, 18);
                 this.TabStop = true;
+                this.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkClick);
 
                 //  model
                 this.model = model;
             }
 
+            private void LinkClick(object sender, LinkLabelLinkClickedEventArgs e)
+            {
+            }
+
             private void ChangeModel()
             {
                 if (model == null) return;
-                this.Text = model.genre.ToString();
+                this.Text = model.genre_name;
             }
         }
         private class KeyWordLabel : Label, IChangeModel

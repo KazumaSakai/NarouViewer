@@ -52,13 +52,6 @@ namespace NarouViewer.API
             public string novelupdated_at { get; set; }
             public string updated_at { get; set; }
             public int weekly_unique { get; set; }
-            public string genre_name
-            {
-                get
-                {
-                    return NarouAPI.GetGenreName(genre);
-                }
-            }
         }
 
         /// <summary>
@@ -728,19 +721,93 @@ namespace NarouViewer.API
                 }
                 return str;
             }
+
+            public static readonly Dictionary<Genre, int> genreEnum2int = new Dictionary<Genre, int>
+            {
+                { Genre.other_worldy, 101 },
+                { Genre.real_world, 102 },
+                { Genre.high_fantasy, 201 },
+                { Genre.low_fantasy, 202 },
+                { Genre.pure_literature, 301 },
+                { Genre.human_drama, 302 },
+                { Genre.history, 303 },
+                { Genre.reasoning, 304 },
+                { Genre.horror, 305 },
+                { Genre.action, 306 },
+                { Genre.comedy, 307 },
+                { Genre.vr_game, 401 },
+                { Genre.universe, 402 },
+                { Genre.science_fiction, 403 },
+                { Genre.panic, 404 },
+                { Genre.fairy_tale, 9901 },
+                { Genre.poem, 9902 },
+                { Genre.essay, 9903 },
+                { Genre.replay, 9904 },
+                { Genre.other, 9999 },
+                { Genre.nongenre, 9801 }
+            };
+            public static readonly Dictionary<string, Genre> genreString2Enum = new Dictionary<string, Genre>
+            {
+                { "異世界", Genre.other_worldy },
+                { "現実世界", Genre.real_world },
+                { "ハイファンタジー" , Genre.high_fantasy },
+                { "ローファンタジー" , Genre.low_fantasy },
+                { "純文学" , Genre.pure_literature },
+                { "ヒューマンドラマ" , Genre.human_drama },
+                { "歴史" , Genre.history },
+                { "推理" , Genre.reasoning },
+                { "ホラー" , Genre.horror },
+                { "アクション" , Genre.action },
+                { "コメディー" , Genre.comedy },
+                { "VRゲーム" , Genre.vr_game },
+                { "宇宙" , Genre.universe },
+                { "空想科学" , Genre.science_fiction },
+                { "パニック" , Genre.panic },
+                { "童話" , Genre.fairy_tale },
+                { "詩" , Genre.poem },
+                { "エッセイ" , Genre.essay },
+                { "リプレイ" , Genre.replay },
+                { "その他" , Genre.other },
+                { "ノンジャンル" , Genre.nongenre }
+            };
+            public static readonly Dictionary<int, string> genreint2String = new Dictionary<int, string>()
+        {
+            { 101, "異世界〔恋愛〕" },
+            { 102, "現実世界〔恋愛〕"},
+            { 201, "ハイファンタジー〔ファンタジー〕" },
+            { 202, "ローファンタジー〔ファンタジー〕" },
+            { 301, "純文学〔文芸〕" },
+            { 302, "ヒューマンドラマ〔文芸〕" },
+            { 303, "歴史〔文芸〕" },
+            { 304, "推理〔文芸〕" },
+            { 305, "ホラー〔文芸〕" },
+            { 306, "アクション〔文芸〕" },
+            { 307, "コメディー〔文芸〕" },
+            { 401, "VRゲーム〔SF〕" },
+            { 402, "宇宙〔SF〕" },
+            { 403, "空想科学〔SF〕" },
+            { 404, "パニック〔SF〕" },
+            { 9901, "童話〔その他〕" },
+            { 9902, "詩〔その他〕" },
+            { 9903, "エッセイ〔その他〕" },
+            { 9904, "リプレイ〔その他〕" },
+            { 9999, "その他〔その他〕" },
+            { 9801, "ノンジャンル〔ノンジャンル〕" },
+        };
+
             public static string GenreToString(Genre genre)
             {
                 string str = "";
-                string[] code = { "101", "102", "201", "202", "301", "303", "304", "305", "306", "307", "401", "402", "403", "404", "9901", "9903", "9904", "9999", "9801" };
                 bool isFirst = true;
                 for (int i = 0; i < 21; i++)
                 {
-                    if (genre.HasFlag((Genre)(1 << i)))
+                    Genre g = (Genre)(1 << i);
+                    if (genre.HasFlag(g))
                     {
                         if (isFirst) isFirst = false;
                         else str += "-";
 
-                        str += code[i];
+                        str += genreEnum2int[g].ToString();
                     }
                 }
                 return str;
@@ -940,6 +1007,9 @@ namespace NarouViewer.API
                     args += "&lastup=" + lastUp.ToString();
                 }
                 if (weekly) args += "&opt=weekly";
+
+                Console.WriteLine(args);
+
                 return args;
             }
         }
@@ -1006,33 +1076,5 @@ namespace NarouViewer.API
             return result;
         }
 
-        private static Dictionary<int, string> genreDictionary = new Dictionary<int, string>()
-        {
-            { 101, "異世界〔恋愛〕" },
-            { 102, "現実世界〔恋愛〕"},
-            { 201, "ハイファンタジー〔ファンタジー〕" },
-            { 202, "ローファンタジー〔ファンタジー〕" },
-            { 301, "純文学〔文芸〕" },
-            { 302, "ヒューマンドラマ〔文芸〕" },
-            { 303, "歴史〔文芸〕" },
-            { 304, "推理〔文芸〕" },
-            { 305, "ホラー〔文芸〕" },
-            { 306, "アクション〔文芸〕" },
-            { 307, "コメディー〔文芸〕" },
-            { 401, "VRゲーム〔SF〕" },
-            { 402, "宇宙〔SF〕" },
-            { 403, "空想科学〔SF〕" },
-            { 404, "パニック〔SF〕" },
-            { 9901, "童話〔その他〕" },
-            { 9902, "詩〔その他〕" },
-            { 9903, "エッセイ〔その他〕" },
-            { 9904, "リプレイ〔その他〕" },
-            { 9999, "リプレイ〔その他〕" },
-            { 9801, "ノンジャンル〔ノンジャンル〕" },
-        };
-        public static string GetGenreName(int id)
-        {
-            return genreDictionary[id];
-        }
     }
 }

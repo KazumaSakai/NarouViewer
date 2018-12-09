@@ -396,7 +396,7 @@ namespace NarouViewer
             private void ChangeModel()
             {
                 if (model == null) return;
-                this.Text = model.genre_name;
+                this.Text = NarouAPI.GetParameter.genreint2String[model.genre];
             }
         }
         private class KeyWordLabel : Label, IChangeModel

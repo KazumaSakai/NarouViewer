@@ -62,6 +62,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\INovelData.cs" />
+    <Compile Include="Interface\IRequestSize.cs" />
+    <Compile Include="NarouAPI\Delegate\StringEventHandler.cs" />
     <Compile Include="NarouAPI\Model\NarouAPI.cs" />
     <Compile Include="NarouAPI\View + Controller\DefaultLabel.cs">
       <SubType>Component</SubType>
@@ -73,6 +76,60 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="NarouAPI\View + Controller\NovelDataView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\BookmarkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\EvaluationLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\EvaluatorLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\IllustrationLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\PCUploadLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\GenreLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\LastUpdateLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\NovelInfoLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\PhoneUploadLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\ReadTimeLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\ReviewLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\SummryLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\TagLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\TagsPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\TitleLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\TotalPointLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\UniqueUserLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NarouAPI\View + Controller\View\WriterLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
@@ -106,8 +163,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interface\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

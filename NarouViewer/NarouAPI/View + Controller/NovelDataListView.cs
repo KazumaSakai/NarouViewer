@@ -17,13 +17,14 @@ namespace NarouViewer
             set
             {
                 _model = value;
-                ChangeModel();
+                OnModelChanged();
             }
             get
             {
                 return _model;
             }
         }
+
         private List<NovelDataView> novelDataViews;
 
         public NovelDataListView(List<NarouAPI.NovelData> model)
@@ -38,18 +39,17 @@ namespace NarouViewer
             this.model = model;
         }
 
-        private void ChangeModel()
+        private void OnModelChanged()
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((Action)ChangeModel);
+                this.Invoke((Action)OnModelChanged);
                 return;
             }
 
             if (model == null) return;
 
             model.RemoveAll((a) => a == null || a.title == null || a.keyword == null || a.userid == 0);
-            this.Size = new Size(this.Width, 262 * model.Count + 6);
 
             int needModelCount = model.Count - novelDataViews.Count;
 
@@ -58,10 +58,8 @@ namespace NarouViewer
                 for (int i = 0; i < needModelCount; i++)
                 {
                     NovelDataView view = new NovelDataView(null);
-                    view.Location = new Point(3, 3 + (novelDataViews.Count * 262));
 
                     this.Controls.Add(view);
-
                     this.novelDataViews.Add(view);
                 }
             }
@@ -76,10 +74,17 @@ namespace NarouViewer
                 }
             }
 
+            int nowY = 3;
             for (int i = 0; i < model.Count; i++)
             {
-                novelDataViews[i].model = model[i];
+                NovelDataView view = novelDataViews[i];
+                view.model = model[i];
+                view.Location = new Point(3, nowY);
+
+                nowY += view.Size.Height + 3;
             }
+
+            this.Size = new Size(this.Width, nowY + 6);
         }
         private void OnScrollCallBack(object sender, ScrollEventArgs e)
         {

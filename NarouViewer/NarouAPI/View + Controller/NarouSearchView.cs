@@ -139,7 +139,7 @@ namespace NarouViewer
         }
         private void ParentSizeChanged(object sender, EventArgs e)
         {
-            int space_width = this.Parent.Width - this.Width;
+            int space_width = (this.Parent.Width - 35) - this.Width;
 
             this.SuspendLayout();
             this.Location = new Point(space_width / 2, 3);
@@ -163,15 +163,14 @@ namespace NarouViewer
         }
         public void UpdateSize()
         {
-            Size size = new Size(
-                Math.Max(Math.Max(searchKeywordTabs.Size.Width, exclusionKeywordTabs.Size.Width), genrePanel.Size.Width),
-                Math.Max(searchKeywordTabs.Size.Height, exclusionKeywordTabs.Size.Height) + genrePanel.Size.Height
-                );
-
             this.SuspendLayout();
-            this.searchButton.Location = new Point(100, 122 + size.Height);
-            this.listModel.Location = new Point(3, 180 + size.Height);
-            this.Size = new Size(706, 185 + listModel.Size.Height + size.Height);
+
+            this.exclusionKeywordTabs.Location = new Point(12, searchKeywordTabs.Location.Y + searchKeywordTabs.Height + 3);
+            this.genrePanel.Location = new Point(12, exclusionKeywordTabs.Location.Y + exclusionKeywordTabs.Height + 3);
+            this.searchButton.Location = new Point(100, genrePanel.Location.Y + genrePanel.Height + 3);
+            this.listModel.Location = new Point(3, searchButton.Location.Y + searchButton.Height + 3);
+            this.Size = new Size(706, listModel.Location.Y + listModel.Height + 3);
+
             this.ResumeLayout();
         }
 
@@ -456,7 +455,7 @@ namespace NarouViewer
                     this.Text = "公式キーワード";
                     this.UseVisualStyleBackColor = true;
 
-                    this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15)));
+                    this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15), true));
                     this.Controls.Add(this.keywordsTable = new KeywordsTable(officialKeywords, model) { Location = new Point(8, title.Location.Y + title.Height + 3)});
 
                     this.defaultSize = new Size(682, keywordsTable.Location.Y + keywordsTable.Height + 8);
@@ -576,16 +575,16 @@ namespace NarouViewer
                     this.Text = "おすすめキーワード";
                     this.UseVisualStyleBackColor = true;
 
-                    this.Controls.Add(this.loveTitle = new DefaultLabel("恋愛", "love", new Point(11, 15)));
+                    this.Controls.Add(this.loveTitle = new DefaultLabel("恋愛", "love", new Point(11, 15), true));
                     this.Controls.Add(this.loveTable = new KeywordsTable(loveKeywords, model) { Location = new Point(8, loveTitle.Location.Y + loveTitle.Height + 3) });
 
-                    this.Controls.Add(this.fantasyTitle = new DefaultLabel("ファンタジー", "fantasy", new Point(11, 150)) { Location = new Point(8, loveTable.Location.Y + loveTable.Height + 15) });
+                    this.Controls.Add(this.fantasyTitle = new DefaultLabel("ファンタジー", "fantasy", new Point(11, 150), true) { Location = new Point(8, loveTable.Location.Y + loveTable.Height + 15) });
                     this.Controls.Add(this.fantasyTable = new KeywordsTable(fantasyKeywords, model) { Location = new Point(8, fantasyTitle.Location.Y + fantasyTitle.Height + 3) });
 
-                    this.Controls.Add(this.literatureTitle = new DefaultLabel("文芸", "literature", new Point(11, 240)) { Location = new Point(8, fantasyTable.Location.Y + fantasyTable.Height + 15) });
+                    this.Controls.Add(this.literatureTitle = new DefaultLabel("文芸", "literature", new Point(11, 240), true) { Location = new Point(8, fantasyTable.Location.Y + fantasyTable.Height + 15) });
                     this.Controls.Add(this.literatureTable = new KeywordsTable(literatureKeywords, model) { Location = new Point(8, literatureTitle.Location.Y + literatureTitle.Height + 3) });
 
-                    this.Controls.Add(this.sfTitle = new DefaultLabel("SF", "sf", new Point(11, 520)) { Location = new Point(8, literatureTable.Location.Y + literatureTable.Height + 15) });
+                    this.Controls.Add(this.sfTitle = new DefaultLabel("SF", "sf", new Point(11, 520), true) { Location = new Point(8, literatureTable.Location.Y + literatureTable.Height + 15) });
                     this.Controls.Add(this.sfTable = new KeywordsTable(sfKeywords, model) { Location = new Point(8, sfTitle.Location.Y + sfTitle.Height + 3) });
 
                     this.defaultSize = new Size(682, sfTable.Location.Y + sfTable.Height + 8);
@@ -637,7 +636,7 @@ namespace NarouViewer
                     this.Text = "リプレイ用キーワード";
                     this.UseVisualStyleBackColor = true;
 
-                    this.Controls.Add(this.replayLabel = new DefaultLabel("リプレイ用キーワード", "love", new Point(11, 15)));
+                    this.Controls.Add(this.replayLabel = new DefaultLabel("リプレイ用キーワード", "love", new Point(11, 15), true));
                     this.Controls.Add(this.replayTable = new KeywordsTable(replayKeywords, model, 1) { Location = new Point(8, replayLabel.Location.Y + replayLabel.Height + 3) });
 
                     this.defaultSize = new Size(682, replayTable.Location.Y + replayTable.Height + 8);
@@ -683,7 +682,7 @@ namespace NarouViewer
                         totalHeight += (height + 1);
 
                         this.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-                        Label label = new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3));
+                        Label label = new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3), true);
                         label.Padding = new Padding(3);
                         this.Controls.Add(label, 0, i);
 
@@ -813,7 +812,7 @@ namespace NarouViewer
                 this.TabIndex = 0;
                 this.Text = "公式キーワード";
 
-                this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15)));
+                this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15), true));
                 this.Controls.Add(this.genreTable = new GenreTable(model) { Location = new Point(8, title.Location.Y + title.Height + 3) });
 
                 this.Size = new Size(682, 0);
@@ -933,7 +932,7 @@ namespace NarouViewer
                         totalHeight += (height + 1);
 
                         this.RowStyles.Add(new RowStyle(SizeType.Absolute, height));
-                        Label label = new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3));
+                        Label label = new DefaultLabel(lineWords[0], lineWords[0], new Point(3, 3), true);
                         label.Padding = new Padding(3);
                         this.Controls.Add(label, 0, i);
 

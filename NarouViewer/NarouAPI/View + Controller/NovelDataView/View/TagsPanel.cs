@@ -22,7 +22,7 @@ namespace NarouViewer
                 return _model;
             }
         }
-
+            
         public StringEventHandler onClickedTags;
 
         private List<TagLinkLabel> tagLinks = new List<TagLinkLabel>();
@@ -89,7 +89,7 @@ namespace NarouViewer
                         int xSize = (int)System.Math.Ceiling(f.Width) + 1;
 
                         //  改行
-                        if (nextX != 2 && nextX + xSize > this.Size.Width)
+                        if (nextX != 2 && nextX + xSize > 480)
                         {
                             nowLine++;
                             nextX = 2;

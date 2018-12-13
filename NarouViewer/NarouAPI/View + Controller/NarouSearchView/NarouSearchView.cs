@@ -17,7 +17,7 @@ namespace NarouViewer
             set
             {
                 _model = value;
-                ChangeModel();
+                OnModelChanged();
 
             }
             get
@@ -39,18 +39,23 @@ namespace NarouViewer
             }
         }
 
-        private SearchLabel searchLabel;
+        private Label searchLabel;
+        private Label eSearchLabel;
+
         private SearchTextBox searchTextBox;
-        private ChoiceSearchWordButton choiceSearchWordButton;
-        private ExclusionLabel exclusionLabel;
-        private ExclusionTextBox exclusionTextBox;
-        private ChoiceExclusionWordButton choiceExclusionWordButton;
-        private SearchOptionLabel searchOptionLabel;
-        private ChoiceGenreButton choiceGenreButton;
-        private ChoiceDetailOption choiceDetailOption;
-        private SearchButton searchButton;
-        private SearchKeywordTabs searchKeywordTabs;
-        private SearchKeywordTabs exclusionKeywordTabs;
+        private SearchTextBox eSearchTextBox;
+
+        private Button searchWordButton;
+        private Button eSearchWordButton;
+
+        private Label searchOptLabel;
+
+        private Button genreButton;
+        private Button detailOptButton;
+        private Button searchButton;
+
+        private SearchKeywordTabs keywordTabs;
+        private SearchKeywordTabs eKeywordTabs;
         private GenrePanel genrePanel;
 
         public NarouSearchView(NarouAPI.GetParameter model)
@@ -59,44 +64,53 @@ namespace NarouViewer
             this.Location = new Point(3, 3);
             this.Name = "searchPanel";
 
-            this.Controls.Add(this.searchLabel = new SearchLabel());
-            this.Controls.Add(this.searchTextBox = new SearchTextBox());
-            this.Controls.Add(this.choiceSearchWordButton = new ChoiceSearchWordButton());
-            this.Controls.Add(this.exclusionLabel = new ExclusionLabel());
-            this.Controls.Add(this.exclusionTextBox = new ExclusionTextBox());
-            this.Controls.Add(this.choiceExclusionWordButton = new ChoiceExclusionWordButton());
-            this.Controls.Add(this.searchOptionLabel = new SearchOptionLabel());
-            this.Controls.Add(this.choiceGenreButton = new ChoiceGenreButton());
-            this.Controls.Add(this.choiceDetailOption = new ChoiceDetailOption());
-            this.Controls.Add(this.searchButton = new SearchButton());
-            this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
-            this.Controls.Add(this.searchKeywordTabs = new SearchKeywordTabs(model));
-            this.Controls.Add(this.exclusionKeywordTabs = new SearchKeywordTabs(model));
-            this.Controls.Add(this.genrePanel = new GenrePanel(model));
-
-            this.searchKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
-            this.exclusionKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
-            this.genrePanel.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
-
-            this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
-            this.choiceSearchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
+            //  Search Line
+            this.Controls.Add(this.searchLabel = new DefaultLabel("検索", "searchLabel", Point.Empty, false));
+            this.Controls.Add(this.searchTextBox = new SearchTextBox(model));
+            this.Controls.Add(this.searchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 検索ワードを選択" });
+            this.searchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 genrePanel.Close();
-                exclusionKeywordTabs.Close();
-                searchKeywordTabs.AnimationOpen();
+                eKeywordTabs.Close();
+                keywordTabs.AnimationOpen();
             });
-            this.choiceExclusionWordButton.Click += new EventHandler((object sender, EventArgs e) =>
+
+            //  Exclusion Line
+            this.Controls.Add(this.eSearchLabel = new DefaultLabel("除外", "exclusionLabel", Point.Empty, false));
+            this.Controls.Add(this.eSearchTextBox = new SearchTextBox(model));
+            this.Controls.Add(this.eSearchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 除外ワードを選択" });
+            this.eSearchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 genrePanel.Close();
-                searchKeywordTabs.Close();
-                exclusionKeywordTabs.AnimationOpen();
+                keywordTabs.Close();
+                eKeywordTabs.AnimationOpen();
             });
-            this.choiceGenreButton.Click += new EventHandler((object sender, EventArgs e) =>
+
+            //  SearchOption Line
+            this.Controls.Add(this.searchOptLabel = new DefaultLabel("検索条件設定 ：", "searchOptionLabel", Point.Empty, false));
+            this.Controls.Add(this.genreButton = new Button() { Size = new Size(130, 26), Text = "+ ジャンル選択" });
+            this.genreButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
-                exclusionKeywordTabs.Close();
-                searchKeywordTabs.Close();
+                eKeywordTabs.Close();
+                keywordTabs.Close();
                 genrePanel.AnimationOpen();
             });
+            this.Controls.Add(this.detailOptButton = new Button() { Size = new Size(130, 26), Text = "+ 詳細条件設定"});
+
+            //  Keyword Line
+            this.Controls.Add(this.keywordTabs = new SearchKeywordTabs(model));
+            this.keywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
+            this.Controls.Add(this.eKeywordTabs = new SearchKeywordTabs(model));
+            this.eKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
+            this.Controls.Add(this.genrePanel = new GenrePanel(model));
+            this.genrePanel.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
+
+            //  SearchButton Line
+            this.Controls.Add(this.searchButton = new Button() { Size = new Size(500, 33) , Text = "検索", Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128) });
+            this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
+
+            //  DataList View
+            this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
 
             this.ParentChanged += new EventHandler(ChangeParent);
             this.parentSizeChanged += new EventHandler(ParentSizeChanged);
@@ -106,21 +120,20 @@ namespace NarouViewer
             this.UpdateSize();
         }
 
-        private void ChangeModel()
+        private void OnModelChanged()
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((Action)ChangeModel);
+                this.Invoke((Action)OnModelChanged);
                 return;
             }
 
             if (model == null) return;
 
-            model.word = searchTextBox.Text;
-            model.notWord = exclusionTextBox.Text;
+            model.notWord = eSearchTextBox.Text;
 
             StringBuilder sb = new StringBuilder();
-            foreach (string keyword in searchKeywordTabs.searchKeywordList)
+            foreach (string keyword in keywordTabs.searchKeywordList)
             {
                 sb.Append(" ");
                 sb.Append(keyword);
@@ -149,7 +162,7 @@ namespace NarouViewer
         public void Search()
         {
             if (listModel == null) return;
-            this.ChangeModel();
+            this.OnModelChanged();
 
             Task.Run(async () =>
             {
@@ -165,131 +178,78 @@ namespace NarouViewer
         {
             this.SuspendLayout();
 
-            this.exclusionKeywordTabs.Location = new Point(12, searchKeywordTabs.Location.Y + searchKeywordTabs.Height + 3);
-            this.genrePanel.Location = new Point(12, exclusionKeywordTabs.Location.Y + exclusionKeywordTabs.Height + 3);
-            this.searchButton.Location = new Point(100, genrePanel.Location.Y + genrePanel.Height + 3);
-            this.listModel.Location = new Point(3, searchButton.Location.Y + searchButton.Height + 3);
-            this.Size = new Size(706, listModel.Location.Y + listModel.Height + 3);
+            int nowY = 10;
 
+            //  Search Line
+            this.searchLabel.Location = new Point(3, nowY + 4);
+            this.searchTextBox.Location = new Point(56, nowY);
+            this.searchWordButton.Location = new Point(573, nowY - 1);
+            nowY += this.searchTextBox.Height + 3;
+
+            //  Exclusion Line
+            this.eSearchLabel.Location = new Point(3, nowY + 4);
+            this.eSearchTextBox.Location = new Point(56, nowY);
+            this.eSearchWordButton.Location = new Point(573, nowY - 1);
+            nowY += this.eSearchTextBox.Height + 10;
+
+            //  SearchOption Line
+            this.searchOptLabel.Location = new Point(311, nowY + 5);
+            this.genreButton.Location = new Point(431, nowY);
+            this.detailOptButton.Location = new Point(567, nowY);
+            nowY += this.detailOptButton.Height + 3;
+
+            //  Keyword Line
+            this.keywordTabs.Location = new Point(12, nowY);
+            this.eKeywordTabs.Location = new Point(12, nowY);
+            this.genrePanel.Location = new Point(12, nowY);
+            nowY += this.keywordTabs.Height + this.eKeywordTabs.Height + this.genrePanel.Height + 3;
+
+            //  SearchButton Line
+            this.searchButton.Location = new Point(100, nowY);
+            nowY += this.searchButton.Height + 3;
+
+            //  DataList Line
+            this.listModel.Location = new Point(3, nowY);
+            nowY += this.listModel.Height + 3;
+
+            this.Size = new Size(706, nowY);
             this.ResumeLayout();
         }
 
-        private class SearchLabel : Label
-        {
-            public SearchLabel()
-            {
-                this.Font = new Font("MS UI Gothic", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(3, 19);
-                this.Name = "searchLabel";
-                this.Size = new Size(50, 25);
-                this.Text = "検索";
-                this.TextAlign = ContentAlignment.MiddleCenter;
-
-            }
-        }
         private class SearchTextBox : TextBox
         {
-            public SearchTextBox()
+            private NarouAPI.GetParameter _model;
+            public NarouAPI.GetParameter model
+            {
+                get
+                {
+                    OnModelChanged();
+                    return _model;
+                }
+                set
+                {
+                    _model = value;
+                }
+            }
+
+            public SearchTextBox(NarouAPI.GetParameter model)
             {
                 this.Cursor = Cursors.IBeam;
                 this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(56, 19);
                 this.Name = "searchTextBox";
                 this.Size = new Size(514, 25);
+                this.TextChanged += new EventHandler(OnTextChanged);
+            }
 
-            }
-        }
-        private class ChoiceSearchWordButton : Button
-        {
-            public ChoiceSearchWordButton()
+            private void OnTextChanged(object sender, EventArgs e)
             {
-                this.Location = new Point(573, 19);
-                this.Name = "ChoiceSearchWordButton";
-                this.Size = new Size(122, 25);
-                this.Text = "+ 検索ワードを選択";
-                this.UseVisualStyleBackColor = true;
+                this.model.word = this.Text;
             }
-        }
-        private class ExclusionLabel : Label
-        {
-            public ExclusionLabel()
+            private void OnModelChanged()
             {
-                this.Font = new Font("MS UI Gothic", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(3, 56);
-                this.Name = "exclusionLabel";
-                this.Size = new Size(50, 25);
-                this.Text = "除外";
-                this.TextAlign = ContentAlignment.MiddleCenter;
-            }
-        }
-        private class ExclusionTextBox : TextBox
-        {
-            public ExclusionTextBox()
-            {
-                this.Cursor = Cursors.IBeam;
-                this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(56, 56);
-                this.Name = "ExclusionTextBox";
-                this.Size = new Size(514, 25);
-            }
-        }
-        private class ChoiceExclusionWordButton : Button
-        {
-            public ChoiceExclusionWordButton()
-            {
-                this.Location = new Point(573, 56);
-                this.Name = "ChoiceExclusionWordButton";
-                this.Size = new Size(122, 25);
-                this.Text = "+ 除外ワードを選択";
-                this.UseVisualStyleBackColor = true;
-            }
-        }
-        private class SearchOptionLabel : Label
-        {
-            public SearchOptionLabel()
-            {
-                this.Font = new Font("MS UI Gothic", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(311, 89);
-                this.Name = "searchOptionLabel";
-                this.Size = new Size(117, 23);
-                this.Text = "検索条件設定 ：";
-                this.TextAlign = ContentAlignment.MiddleCenter;
-            }
-        }
-        private class ChoiceGenreButton : Button
-        {
-            public ChoiceGenreButton()
-            {
-                this.Font = new Font("ＭＳ Ｐゴシック", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(431, 87);
-                this.Name = "choiceGenreButton";
-                this.Size = new Size(130, 26);
-                this.Text = "+ ジャンル選択";
-                this.UseVisualStyleBackColor = true;
-            }
-        }
-        private class ChoiceDetailOption : Button
-        {
-            public ChoiceDetailOption()
-            {
-                this.Font = new Font("ＭＳ Ｐゴシック", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 128);
-                this.Location = new Point(567, 87);
-                this.Name = "ChoiceDetailOption";
-                this.Size = new Size(130, 26);
-                this.Text = "+ 詳細条件設定";
-                this.UseVisualStyleBackColor = true;
-            }
-        }
-        private class SearchButton : Button
-        {
-            public SearchButton()
-            {
-                this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128);
-                this.Location = new Point(100, 122);
-                this.Name = "searchButton";
-                this.Size = new Size(500, 33);
-                this.Text = "検索";
-                this.UseVisualStyleBackColor = true;
+                if (this.model == null) return;
+
+                this.model.word = this.Text;
             }
         }
 

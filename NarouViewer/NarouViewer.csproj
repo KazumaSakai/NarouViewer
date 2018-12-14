@@ -56,88 +56,97 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Animator.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="View\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="View\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\INovelData.cs" />
     <Compile Include="Interface\IRequestSize.cs" />
-    <Compile Include="NarouAPI\Delegate\StringEventHandler.cs" />
-    <Compile Include="NarouAPI\Model\NarouAPI.cs" />
-    <Compile Include="NarouAPI\View + Controller\DefaultLabel.cs">
+    <Compile Include="Delegate\StringEventHandler.cs" />
+    <Compile Include="Library\NarouAPI\Model\NarouAPI.cs" />
+    <Compile Include="View\DefaultLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NarouSearchView\NarouSearchView.cs">
+    <Compile Include="Library\NarouAPI\View\NarouSearchView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataListView\NovelDataListView.cs">
+    <Compile Include="Library\NarouAPI\View\NarouSearchView\GenrePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\NovelDataView.cs">
+    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\BookmarkLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\EvaluationLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\EvaluatorLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\IllustrationLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\BookmarkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\PCUploadLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\EvaluationLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\GenreLinkLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\EvaluatorLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\LastUpdateLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\IllustrationLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\NovelInfoLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\PCUploadLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\PhoneUploadLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\GenreLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\ReadTimeLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\LastUpdateLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\ReviewLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\NovelInfoLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\SummryLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\PhoneUploadLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\TagLinkLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\ReadTimeLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\TagsPanel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\ReviewLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\TitleLinkLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\SummryLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\TotalPointLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\TagLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\UniqueUserLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\TagsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="NarouAPI\View + Controller\NovelDataView\View\WriterLinkLabel.cs">
+    <Compile Include="Library\NarouAPI\View\NovelDataView\TitleLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Library\NarouAPI\View\NovelDataView\TotalPointLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Library\NarouAPI\View\NovelDataView\UniqueUserLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Library\NarouAPI\View\NovelDataView\WriterLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Class\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="View\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NarouAPI\View + Controller\NovelDataView\NovelDataView.resx">
+    <EmbeddedResource Include="Library\NarouAPI\View\NovelDataView.resx">
       <DependentUpon>NovelDataView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

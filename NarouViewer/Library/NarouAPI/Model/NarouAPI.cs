@@ -57,7 +57,7 @@ namespace NarouViewer.API
         /// <summary>
         /// 出力パラメータ
         /// </summary>
-        public class GetParameter
+        public class SearchParameter
         {
             /// <summary>
             /// 出力する形式
@@ -634,6 +634,10 @@ namespace NarouViewer.API
             /// 週間ユニークユーザー数を取得する
             /// </summary>
             public bool weekly;
+            /// <summary>
+            /// 検索ワードリスト
+            /// </summary>
+            public List<string> searchKeywordList = new List<string>();
 
             /// <summary>
             /// コンストラクタ
@@ -650,7 +654,7 @@ namespace NarouViewer.API
             /// <param name="search_Summary">あらすじを検索対象とする</param>
             /// <param name="search_KeyWord">キーワードを検索対象とする</param>
             /// <param name="search_WriterName">作者名を検索対象とする</param>
-            public GetParameter()
+            public SearchParameter()
             {
                 this.useGZIP = true;
                 this.outType = OutType.json;
@@ -824,7 +828,18 @@ namespace NarouViewer.API
                 if (order != Order.newest) args += "&order=" + order.ToString();
                 if (word != "" || notWord != "")
                 {
-                    if (word != "") args += "&word=" + word;
+                    if (word != "" || searchKeywordList.Count != 0)
+                    {
+                        args += "&word=" + word;
+
+                        StringBuilder sb = new StringBuilder();
+                        foreach (string keyword in searchKeywordList)
+                        {
+                            sb.Append(" ");
+                            sb.Append(keyword);
+                        }
+                        args += sb.ToString();
+                    }
                     if (notWord != "") args += "&notword=" + notWord;
                     if (searchWordTarget != 0)
                     {
@@ -1017,9 +1032,9 @@ namespace NarouViewer.API
 
         public static async Task<List<NovelData>> Get()
         {
-            return await Get(new GetParameter());
+            return await Get(new SearchParameter());
         }
-        public static async Task<List<NovelData>> Get(GetParameter getParameter)
+        public static async Task<List<NovelData>> Get(SearchParameter getParameter)
         {
             string url = NarouAPI.url + getParameter.ToString();
 
@@ -1038,11 +1053,11 @@ namespace NarouViewer.API
 
                             switch(getParameter.outType)
                             {
-                                case GetParameter.OutType.json:
+                                case SearchParameter.OutType.json:
                                     getData = JsonConvert.DeserializeObject<List<NovelData>>(data);
                                     break;
 
-                                case GetParameter.OutType.yaml:
+                                case SearchParameter.OutType.yaml:
                                     var deserializer = new Deserializer();
                                     getData = deserializer.Deserialize<List<NovelData>>(data);
                                     break;

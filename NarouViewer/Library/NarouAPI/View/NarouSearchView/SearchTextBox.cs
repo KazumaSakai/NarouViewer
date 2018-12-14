@@ -7,21 +7,21 @@ namespace NarouViewer
 {
     public class SearchTextBox : TextBox
     {
-        private NarouAPI.GetParameter _model;
-        public NarouAPI.GetParameter model
+        private NarouAPI.SearchParameter _model;
+        public NarouAPI.SearchParameter model
         {
             get
             {
-                OnModelChanged();
                 return _model;
             }
             set
             {
+                OnModelChanged();
                 _model = value;
             }
         }
 
-        public SearchTextBox(NarouAPI.GetParameter model)
+        public SearchTextBox(NarouAPI.SearchParameter model)
         {
             this.Cursor = Cursors.IBeam;
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
@@ -32,6 +32,8 @@ namespace NarouViewer
 
         private void OnTextChanged(object sender, EventArgs e)
         {
+            if (this.model == null) return;
+
             this.model.word = this.Text;
         }
         private void OnModelChanged()

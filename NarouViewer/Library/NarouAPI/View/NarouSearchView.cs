@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using NarouViewer.API;
 
 namespace NarouViewer
 {
-    public class NarouSearchView : Panel
+    /// <summary>
+    /// 検索パラメータを設定するパネル
+    /// </summary>
+    public class NarouSearchView : Panel, IUpdateView
     {
-        private NarouAPI.GetParameter _model;
-        public NarouAPI.GetParameter model
+        #region ### Model ###
+        private NarouAPI.SearchParameter _model;
+        #endregion
+        public NarouAPI.SearchParameter model
         {
             set
             {
@@ -25,45 +26,40 @@ namespace NarouViewer
                 return _model;
             }
         }
+        public NarouSearchController controller;
 
-        private NovelDataListView _listModel;
-        public NovelDataListView listModel
-        {
-            set
-            {
-                _listModel = value;
-            }
-            get
-            {
-                return _listModel;
-            }
-        }
-
+        #region ### 子コントロール ###
+        //  Search Line
         private Label searchLabel;
-        private Label eSearchLabel;
-
         private SearchTextBox searchTextBox;
-        private SearchTextBox eSearchTextBox;
-
         private Button searchWordButton;
+
+        //  Exclusion Search Line
+        private Label eSearchLabel;
+        private SearchTextBox eSearchTextBox;
         private Button eSearchWordButton;
 
+        //  SearchOption Line
         private Label searchOptLabel;
-
         private Button genreButton;
         private Button detailOptButton;
-        private Button searchButton;
 
+        //  Keyword Line
         private SearchKeywordTabs keywordTabs;
         private SearchKeywordTabs eKeywordTabs;
         private GenrePanel genrePanel;
 
-        public NarouSearchView(NarouAPI.GetParameter model)
-        {
-            this.DoubleBuffered = true;
-            this.Location = new Point(3, 3);
-            this.Name = "searchPanel";
+        //  SearchButton Line
+        private Button searchButton;
+        #endregion
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="model">モデル</param>
+        /// <param name="controller">コントローラー</param>
+        public NarouSearchView(NarouAPI.SearchParameter model, NarouSearchController controller = null)
+        {
             //  Search Line
             this.Controls.Add(this.searchLabel = new DefaultLabel("検索", "searchLabel", Point.Empty, false));
             this.Controls.Add(this.searchTextBox = new SearchTextBox(model));
@@ -75,7 +71,7 @@ namespace NarouViewer
                 keywordTabs.AnimationOpen();
             });
 
-            //  Exclusion Line
+            //  Exclusion Search Line
             this.Controls.Add(this.eSearchLabel = new DefaultLabel("除外", "exclusionLabel", Point.Empty, false));
             this.Controls.Add(this.eSearchTextBox = new SearchTextBox(model));
             this.Controls.Add(this.eSearchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 除外ワードを選択" });
@@ -99,27 +95,33 @@ namespace NarouViewer
 
             //  Keyword Line
             this.Controls.Add(this.keywordTabs = new SearchKeywordTabs(model));
-            this.keywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
             this.Controls.Add(this.eKeywordTabs = new SearchKeywordTabs(model));
-            this.eKeywordTabs.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
             this.Controls.Add(this.genrePanel = new GenrePanel(model));
-            this.genrePanel.SizeChanged += new EventHandler((object sender, EventArgs e) => UpdateSize());
 
             //  SearchButton Line
             this.Controls.Add(this.searchButton = new Button() { Size = new Size(500, 33) , Text = "検索", Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128) });
-            this.searchButton.Click += new EventHandler((object sender, EventArgs e) => Search());
+            this.searchButton.Click += new EventHandler(OnSearchButtonClicked);
 
-            //  DataList View
-            this.Controls.Add(this.listModel = new NovelDataListView(new List<NarouAPI.NovelData>()));
+            //  Parent
+            this.ParentChanged += new EventHandler(OnParentChanged);
+            this._OnParentSizeChanged += new EventHandler(OnParentSizeChanged);
 
-            this.ParentChanged += new EventHandler(ChangeParent);
-            this.parentSizeChanged += new EventHandler(ParentSizeChanged);
-
+            //  Model
             this.model = model;
-            this.Search();
-            this.UpdateSize();
+
+            //  Controller
+            this.controller = controller ?? new NarouSearchController();
+
+
+            //  Init
+            this.DoubleBuffered = true;
+            this.Name = "searchPanel";
+            this.UpdateView();
         }
 
+        /// <summary>
+        /// モデルが変更された時のメソッド
+        /// </summary>
         private void OnModelChanged()
         {
             if (this.InvokeRequired)
@@ -131,26 +133,30 @@ namespace NarouViewer
             if (model == null) return;
 
             model.notWord = eSearchTextBox.Text;
-
-            StringBuilder sb = new StringBuilder();
-            foreach (string keyword in keywordTabs.searchKeywordList)
-            {
-                sb.Append(" ");
-                sb.Append(keyword);
-            }
-            model.word += sb.ToString();
         }
 
-        private EventHandler parentSizeChanged;
+        #region ・ Parent用フィールド ・
+        private EventHandler _OnParentSizeChanged;
         private Control parent;
-        private void ChangeParent(object sender, EventArgs e)
+        #endregion
+        /// <summary>
+        /// 親を変更した時のイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnParentChanged(object sender, EventArgs e)
         {
-            if (parent != null) parent.SizeChanged -= parentSizeChanged;
-            this.Parent.SizeChanged += parentSizeChanged;
+            if (parent != null) parent.SizeChanged -= _OnParentSizeChanged;
+            this.Parent.SizeChanged += _OnParentSizeChanged;
 
             this.parent = Parent;
         }
-        private void ParentSizeChanged(object sender, EventArgs e)
+        /// <summary>
+        /// 親のサイズが変更された時のイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnParentSizeChanged(object sender, EventArgs e)
         {
             int space_width = (this.Parent.Width - 35) - this.Width;
 
@@ -159,22 +165,19 @@ namespace NarouViewer
             this.ResumeLayout();
         }
 
-        public void Search()
+        /// <summary>
+        /// 検索ボタンをクリックしたイベント
+        /// </summary>
+        public void OnSearchButtonClicked(object sender, EventArgs e)
         {
-            if (listModel == null) return;
             this.OnModelChanged();
-
-            Task.Run(async () =>
-            {
-                this.listModel.model = await NarouAPI.Get(model);
-
-                Invoke((Action)(() =>
-                {
-                    this.UpdateSize();
-                }));
-            });
+            controller.Search?.Invoke(this.model);
         }
-        public void UpdateSize()
+
+        /// <summary>
+        /// Viewを更新する
+        /// </summary>
+        public void UpdateView()
         {
             this.SuspendLayout();
 
@@ -207,10 +210,6 @@ namespace NarouViewer
             //  SearchButton Line
             this.searchButton.Location = new Point(100, nowY);
             nowY += this.searchButton.Height + 3;
-
-            //  DataList Line
-            this.listModel.Location = new Point(3, nowY);
-            nowY += this.listModel.Height + 3;
 
             this.Size = new Size(706, nowY);
             this.ResumeLayout();

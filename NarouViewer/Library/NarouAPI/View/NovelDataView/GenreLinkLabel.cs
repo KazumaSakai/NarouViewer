@@ -41,7 +41,7 @@ namespace NarouViewer
         private void OnModelChanged()
         {
             if (model == null) return;
-            this.Text = NarouAPI.GetParameter.genreint2String[model.genre];
+            this.Text = NarouAPI.SearchParameter.genreint2String[model.genre];
         }
     }
 }

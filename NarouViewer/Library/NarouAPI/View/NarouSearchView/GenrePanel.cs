@@ -11,8 +11,8 @@ namespace NarouViewer
 {
     public class GenrePanel : Panel
     {
-        private NarouAPI.GetParameter _model;
-        public NarouAPI.GetParameter model
+        private NarouAPI.SearchParameter _model;
+        public NarouAPI.SearchParameter model
         {
             set
             {
@@ -28,12 +28,10 @@ namespace NarouViewer
         private Label title;
         private GenreTable genreTable;
 
-        public GenrePanel(NarouAPI.GetParameter model)
+        public GenrePanel(NarouAPI.SearchParameter model)
         {
             this.DoubleBuffered = true;
-            this.Location = new Point(12, 120);
             this.Name = "officialKeywordTabPage";
-            this.TabIndex = 0;
             this.Text = "公式キーワード";
 
             this.Controls.Add(this.title = new DefaultLabel("公式キーワード", "title", new Point(11, 15), true));
@@ -41,9 +39,18 @@ namespace NarouViewer
 
             this.Size = new Size(682, 0);
             this.defaultSize = new Size(682, genreTable.Location.Y + genreTable.Height + 8);
+            this.SizeChanged += new EventHandler(OnSizeChanged);
 
             //  Model
             this.model = model;
+        }
+
+        private void OnSizeChanged(object sender, EventArgs e)
+        {
+            IUpdateView updateView = this.Parent as IUpdateView;
+            if (updateView == null) return;
+
+            updateView.UpdateView();
         }
 
         private bool isOpen = false;
@@ -94,8 +101,8 @@ namespace NarouViewer
 
         private class GenreTable : TableLayoutPanel
         {
-            private NarouAPI.GetParameter _model;
-            public NarouAPI.GetParameter model
+            private NarouAPI.SearchParameter _model;
+            public NarouAPI.SearchParameter model
             {
                 set
                 {
@@ -135,7 +142,7 @@ namespace NarouViewer
                     }
             };
 
-            public GenreTable(NarouAPI.GetParameter model, int line = 2)
+            public GenreTable(NarouAPI.SearchParameter model, int line = 2)
             {
                 this.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
                 this.ColumnCount = 2;
@@ -170,8 +177,8 @@ namespace NarouViewer
 
             private class GenreCheckBoxsPanel : Panel
             {
-                private NarouAPI.GetParameter _model;
-                public NarouAPI.GetParameter model
+                private NarouAPI.SearchParameter _model;
+                public NarouAPI.SearchParameter model
                 {
                     set
                     {
@@ -185,7 +192,7 @@ namespace NarouViewer
 
                 CheckBox[] genreCheckBoxs;
 
-                public GenreCheckBoxsPanel(string[] words, NarouAPI.GetParameter model, int line)
+                public GenreCheckBoxsPanel(string[] words, NarouAPI.SearchParameter model, int line)
                 {
                     this.genreCheckBoxs = new CheckBox[words.Length];
                     for (int i = 1; i < words.Length; i++)
@@ -204,7 +211,7 @@ namespace NarouViewer
                         string key = words[i];
                         this.genreCheckBoxs[i].Click += new EventHandler((object sender, EventArgs e) =>
                         {
-                            ClickBox(NarouAPI.GetParameter.genreString2Enum[key]);
+                            ClickBox(NarouAPI.SearchParameter.genreString2Enum[key]);
                         });
                     }
 
@@ -216,7 +223,7 @@ namespace NarouViewer
                     this.model = model;
                 }
 
-                private void ClickBox(NarouAPI.GetParameter.Genre genre)
+                private void ClickBox(NarouAPI.SearchParameter.Genre genre)
                 {
                     if (this.model.genre.HasFlag(genre))
                     {

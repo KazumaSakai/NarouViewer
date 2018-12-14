@@ -56,6 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Animator.cs" />
+    <Compile Include="Interface\IUpdateView.cs" />
+    <Compile Include="Library\NarouAPI\Controller\NarouSearchController.cs" />
+    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs\KeywordTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs\SearchKeywordTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="View\Form1.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -9,9 +9,9 @@ using NarouViewer.API;
 
 namespace NarouViewer
 {
-    public class SearchKeywordTabs : TabControl
+    public class SearchKeywordTabControl : TabControl, IRequestSize, IAnimationOpen
     {
-        #region ### Model ###
+        #region --- Model ---
         private NarouAPI.SearchParameter _model;
         public NarouAPI.SearchParameter model
         {
@@ -26,13 +26,27 @@ namespace NarouViewer
         }
         #endregion
 
-        #region ### 子コントロール ###
-        private SearchKeywordTab officialKeywordTabPage;
-        private SearchKeywordTab recommendKeywordTabPage;
-        private SearchKeywordTab replayKeywordTabPage;
+        #region --- Controller ---
+        public StringEventHandler controller { get; set; }
         #endregion
 
-        #region ### データ ###
+        #region --- IRequestSize ---
+        public Size RequestSize
+        {
+            get
+            {
+                return new Size(690, isOpen ? (30 + (this.TabPages[SelectedIndex] as IRequestSize).RequestSize.Height) : 0);
+            }
+        }
+        #endregion
+
+        #region --- 子コントロール ---
+        private CheckBoxsTablesTabPage officialKeywordTabPage;
+        private CheckBoxsTablesTabPage recommendKeywordTabPage;
+        private CheckBoxsTablesTabPage replayKeywordTabPage;
+        #endregion
+
+        #region --- データ ---
         private static readonly (string[][] words, string title, int line)[] officialData = new (string[][], string title, int)[]
         {
             (new string[][]
@@ -170,26 +184,30 @@ namespace NarouViewer
         /// コンストラクタ
         /// </summary>
         /// <param name="model">モデル</param>
-        public SearchKeywordTabs(NarouAPI.SearchParameter model)
+        public SearchKeywordTabControl(NarouAPI.SearchParameter model, StringEventHandler controller)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.Name = "searchKeywordTabs";
             this.SelectedIndex = 0;
-            this.Size = new Size(690, 0);
 
-            this.Controls.Add(this.officialKeywordTabPage = new SearchKeywordTab(model, "公式キーワード", officialData));
-            this.Controls.Add(this.recommendKeywordTabPage = new SearchKeywordTab(model, "おすすめキーワード", recommendData));
-            this.Controls.Add(this.replayKeywordTabPage = new SearchKeywordTab(model, "リプレイ用キーワード", replayData));
+            this.Controls.Add(this.officialKeywordTabPage = new CheckBoxsTablesTabPage(officialData, "公式キーワード", controller));
+            this.Controls.Add(this.recommendKeywordTabPage = new CheckBoxsTablesTabPage(recommendData, "おすすめキーワード", controller));
+            this.Controls.Add(this.replayKeywordTabPage = new CheckBoxsTablesTabPage(replayData, "リプレイ用キーワード", controller));
 
             this.SelectedIndexChanged += new EventHandler((object sender, EventArgs e) =>
             {
-                AnimationSizeUpdate();
+                SizeUpdate();
             });
 
+            //  Size
             this.SizeChanged += new EventHandler(OnSizeChanged);
+            this.Size = RequestSize;
 
             //  Model
             this.model = model;
+
+            //  Controller
+            this.controller = controller;
         }
 
         /// <summary>
@@ -205,51 +223,43 @@ namespace NarouViewer
             updateView.UpdateView();
         }
 
-        private Size requestSize
-        {
-            get
-            {
-                return new Size(690, 30 + (this.TabPages[SelectedIndex] as IRequestSize).requestSize.Height);
-            }
-        }
-
+        #region --- アニメーション ---
         private bool isOpen = false;
-        public bool AnimationOpen()
+        #endregion
+        public bool AnimationOpen(bool use_Animation, bool open)
         {
-            isOpen = !isOpen;
-            AnimationSizeUpdate();
+            isOpen = open;
+            SizeUpdate(use_Animation);
             return isOpen;
         }
-        public void AnimationOpen(bool open)
+        public bool AnimationOpen(bool use_Animation)
         {
-            if (isOpen == open) return;
-            isOpen = open;
-            AnimationSizeUpdate();
+            return AnimationOpen(!isOpen);
         }
-        public void Close()
+        private void SizeUpdate(bool use_Animation = true)
         {
-            isOpen = false;
-            Size = new Size(requestSize.Width, 0);
-        }
-        private void AnimationSizeUpdate()
-        {
-            AnimationChangeSize(isOpen ? requestSize : new Size(requestSize.Width, 0));
-        }
-        private void AnimationChangeSize(Size newSize)
-        {
-            Size oldSize = this.Size;
-            int needFrame = Math.Abs(newSize.Height - oldSize.Height) / 70;
-            Animator.Animate(Math.Max(1, needFrame), (frame, frequency) =>
+            if(use_Animation)
             {
-                if (!Visible || IsDisposed) return false;
+                Size oldSize = this.Size;
+                Size deltaSize = RequestSize - oldSize;
+                int needFrame = Math.Abs(deltaSize.Height) / 70;
 
-                double value = (double)frame / (double)frequency;
+                Animator.Animate(Math.Max(1, needFrame), (frame, frequency) =>
+                {
+                    if (!Visible || IsDisposed) return false;
 
-                this.SuspendLayout();
-                this.Size = new Size(oldSize.Width + (int)((newSize.Width - oldSize.Width) * value), oldSize.Height + (int)((newSize.Height - oldSize.Height) * value));
-                this.ResumeLayout();
-                return true;
-            });
+                    double value = (double)frame / (double)frequency;
+
+                    this.SuspendLayout();
+                    this.Size = new Size(oldSize.Width + (int)(deltaSize.Width * value), oldSize.Height + (int)(deltaSize.Height * value));
+                    this.ResumeLayout();
+                    return true;
+                });
+            }
+            else
+            {
+                this.Size = RequestSize;
+            }
         }
     }
 }

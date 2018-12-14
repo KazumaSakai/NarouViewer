@@ -638,6 +638,7 @@ namespace NarouViewer.API
             /// 検索ワードリスト
             /// </summary>
             public List<string> searchKeywordList = new List<string>();
+            public List<string> eSearchKeywordList = new List<string>();
 
             /// <summary>
             /// コンストラクタ
@@ -840,7 +841,19 @@ namespace NarouViewer.API
                         }
                         args += sb.ToString();
                     }
-                    if (notWord != "") args += "&notword=" + notWord;
+                    if (notWord != "" || eSearchKeywordList.Count != 0)
+                    {
+                        args += "&notword=" + notWord;
+
+                        StringBuilder sb = new StringBuilder();
+                        foreach (string keyword in eSearchKeywordList)
+                        {
+                            sb.Append(" ");
+                            sb.Append(keyword);
+                        }
+                        args += sb.ToString();
+                    }
+
                     if (searchWordTarget != 0)
                     {
                         bool search_title = searchWordTarget.HasFlag(SearchWordTarget.title);

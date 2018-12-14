@@ -56,12 +56,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Animator.cs" />
+    <Compile Include="Interface\IAnimationOpen.cs" />
+    <Compile Include="Interface\IRequestSize.cs" />
     <Compile Include="Interface\IUpdateView.cs" />
     <Compile Include="Library\NarouAPI\Controller\NarouSearchController.cs" />
-    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs\KeywordTable.cs">
+    <Compile Include="View\CheckBoxs\CheckBoxsTablesTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs\SearchKeywordTab.cs">
+    <Compile Include="View\CheckBoxs\CheckBoxsTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\CheckBoxs\CheckBoxsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="View\Form1.cs">
@@ -71,16 +76,15 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\INovelData.cs" />
-    <Compile Include="Interface\IRequestSize.cs" />
     <Compile Include="Delegate\StringEventHandler.cs" />
     <Compile Include="Library\NarouAPI\Model\NarouAPI.cs" />
     <Compile Include="View\DefaultLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Library\NarouAPI\View\NarouSearchView.cs">
+    <Compile Include="Library\NarouAPI\View\SearchParameterView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Library\NarouAPI\View\NarouSearchView\GenrePanel.cs">
+    <Compile Include="View\CheckBoxs\CheckBoxsTablesPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Library\NarouAPI\View\NarouSearchView\SearchKeywordTabs.cs">

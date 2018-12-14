@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using NarouViewer.API;
@@ -8,11 +9,10 @@ namespace NarouViewer
     /// <summary>
     /// 検索パラメータを設定するパネル
     /// </summary>
-    public class NarouSearchView : Panel, IUpdateView
+    public class SearchParameterView : Panel, IUpdateView
     {
-        #region ### Model ###
+        #region --- Model ---
         private NarouAPI.SearchParameter _model;
-        #endregion
         public NarouAPI.SearchParameter model
         {
             set
@@ -26,9 +26,13 @@ namespace NarouViewer
                 return _model;
             }
         }
-        public NarouSearchController controller;
+        #endregion
 
-        #region ### 子コントロール ###
+        #region --- Controller ---
+        public NarouSearchController controller;
+        #endregion
+
+        #region --- 子コントロール ---
         //  Search Line
         private Label searchLabel;
         private SearchTextBox searchTextBox;
@@ -45,12 +49,46 @@ namespace NarouViewer
         private Button detailOptButton;
 
         //  Keyword Line
-        private SearchKeywordTabs keywordTabs;
-        private SearchKeywordTabs eKeywordTabs;
-        private GenrePanel genrePanel;
+        private SearchKeywordTabControl keywordTabs;
+        private SearchKeywordTabControl eKeywordTabs;
+        private CheckBoxsTablesPanel genrePanel;
 
         //  SearchButton Line
         private Button searchButton;
+        #endregion
+
+        #region --- Data ---
+        private readonly (string[][] word, string title, int line)[] genreData = new (string[][], string, int)[]
+        {
+            (new string[][]
+            {
+                new string[]
+                {
+                    "恋愛", "異世界", "現実世界"
+                },
+                new string[]
+                {
+                    "ファンタジー", "ハイファンタジー", "ローファンタジー"
+                },
+                new string[]
+                {
+                    "文芸", "純文学", "ヒューマンドラマ", "歴史",
+                    "推理", "ホラー", "アクション", "コメディー"
+                },
+                new string[]
+                {
+                    "SF", "VRゲーム", "宇宙", "空想科学", "パニック"
+                },
+                new string[]
+                {
+                    "その他", "童話", "詩", "エッセイ", "リプレイ", "その他"
+                },
+                new string[]
+                {
+                    "ノンジャンル", "ノンジャンル"
+                }
+            }, "ジャンル選択", 3)
+        };
         #endregion
 
         /// <summary>
@@ -58,7 +96,7 @@ namespace NarouViewer
         /// </summary>
         /// <param name="model">モデル</param>
         /// <param name="controller">コントローラー</param>
-        public NarouSearchView(NarouAPI.SearchParameter model, NarouSearchController controller = null)
+        public SearchParameterView(NarouAPI.SearchParameter model, NarouSearchController controller = null)
         {
             //  Search Line
             this.Controls.Add(this.searchLabel = new DefaultLabel("検索", "searchLabel", Point.Empty, false));
@@ -66,9 +104,7 @@ namespace NarouViewer
             this.Controls.Add(this.searchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 検索ワードを選択" });
             this.searchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
-                genrePanel.Close();
-                eKeywordTabs.Close();
-                keywordTabs.AnimationOpen();
+                OpenSearchOption(0);
             });
 
             //  Exclusion Search Line
@@ -77,9 +113,7 @@ namespace NarouViewer
             this.Controls.Add(this.eSearchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 除外ワードを選択" });
             this.eSearchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
-                genrePanel.Close();
-                keywordTabs.Close();
-                eKeywordTabs.AnimationOpen();
+                OpenSearchOption(1);
             });
 
             //  SearchOption Line
@@ -87,16 +121,17 @@ namespace NarouViewer
             this.Controls.Add(this.genreButton = new Button() { Size = new Size(130, 26), Text = "+ ジャンル選択" });
             this.genreButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
-                eKeywordTabs.Close();
-                keywordTabs.Close();
-                genrePanel.AnimationOpen();
+                OpenSearchOption(2);
             });
             this.Controls.Add(this.detailOptButton = new Button() { Size = new Size(130, 26), Text = "+ 詳細条件設定"});
 
             //  Keyword Line
-            this.Controls.Add(this.keywordTabs = new SearchKeywordTabs(model));
-            this.Controls.Add(this.eKeywordTabs = new SearchKeywordTabs(model));
-            this.Controls.Add(this.genrePanel = new GenrePanel(model));
+            this.Controls.Add(this.keywordTabs = new SearchKeywordTabControl(model, new StringEventHandler(SearchKeyword)));
+            this.Controls.Add(this.eKeywordTabs = new SearchKeywordTabControl(model, new StringEventHandler(ESearchKeyword)));
+            this.Controls.Add(this.genrePanel = new CheckBoxsTablesPanel(genreData, new StringEventHandler(GenreKeyword)));
+            this.searchOptionControlList.Add(this.keywordTabs);
+            this.searchOptionControlList.Add(this.eKeywordTabs);
+            this.searchOptionControlList.Add(this.genrePanel);
 
             //  SearchButton Line
             this.Controls.Add(this.searchButton = new Button() { Size = new Size(500, 33) , Text = "検索", Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128) });
@@ -111,7 +146,6 @@ namespace NarouViewer
 
             //  Controller
             this.controller = controller ?? new NarouSearchController();
-
 
             //  Init
             this.DoubleBuffered = true;
@@ -129,13 +163,12 @@ namespace NarouViewer
                 this.Invoke((Action)OnModelChanged);
                 return;
             }
-
             if (model == null) return;
 
             model.notWord = eSearchTextBox.Text;
         }
 
-        #region ・ Parent用フィールド ・
+        #region --- Parent用フィールド ---
         private EventHandler _OnParentSizeChanged;
         private Control parent;
         #endregion
@@ -213,6 +246,61 @@ namespace NarouViewer
 
             this.Size = new Size(706, nowY);
             this.ResumeLayout();
+        }
+
+        #region --- SearchOption Drop ---
+        private int searchOption_Index;
+        private List<IAnimationOpen> searchOptionControlList = new List<IAnimationOpen>();
+        #endregion
+        private void OpenSearchOption(int index)
+        {
+            if(searchOption_Index == index)
+            {
+                searchOption_Index = -1;
+                searchOptionControlList[index].AnimationOpen(true, false);
+            }
+            if(searchOption_Index != -1)
+            {
+                searchOptionControlList[searchOption_Index].AnimationOpen(false, false);
+            }
+
+            searchOptionControlList[index].AnimationOpen(true, true);
+            searchOption_Index = index;
+        }
+
+        private void SearchKeyword(string word)
+        {
+            if (model.searchKeywordList.Contains(word))
+            {
+                model.searchKeywordList.Remove(word);
+            }
+            else
+            {
+                model.searchKeywordList.Add(word);
+            }
+        }
+        private void ESearchKeyword(string word)
+        {
+            if (model.eSearchKeywordList.Contains(word))
+            {
+                model.eSearchKeywordList.Remove(word);
+            }
+            else
+            {
+                model.eSearchKeywordList.Add(word);
+            }
+        }
+        private void GenreKeyword(string word)
+        {
+            NarouAPI.SearchParameter.Genre genre = NarouAPI.SearchParameter.genreString2Enum[word];
+            if(model.genre.HasFlag(genre))
+            {
+                model.genre &= ~genre;
+            }
+            else
+            {
+                model.genre |= genre;
+            }
         }
     }
 }

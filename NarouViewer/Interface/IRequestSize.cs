@@ -4,6 +4,6 @@ namespace NarouViewer
 {
     public interface IRequestSize
     {
-        Size requestSize { get; }
+        Size RequestSize { get; }
     }
 }

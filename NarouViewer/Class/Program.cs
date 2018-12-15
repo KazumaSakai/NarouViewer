@@ -12,7 +12,7 @@ namespace NarouViewer
     static class Program
     {
         [STAThread]
-        static void Main()
+        static void Main(string[] arg)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -20,6 +20,7 @@ namespace NarouViewer
 
             SearchController searchController = new SearchController();
             form.Controls.Add(new SearchView(searchController));
+
 
             Application.Run(form);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 using System.Net.Http;
 using System.IO;
 using System.IO.Compression;
@@ -1065,11 +1066,11 @@ namespace NarouViewer.API
         }
         private static string url = "https://api.syosetu.com/novelapi/api/?";
 
-        public static async Task<List<NovelData>> Get()
+        public static async Task<List<NovelData>> GetSearchData()
         {
-            return await Get(new SearchParameter());
+            return await GetSearchData(new SearchParameter());
         }
-        public static async Task<List<NovelData>> Get(SearchParameter getParameter)
+        public static async Task<List<NovelData>> GetSearchData(SearchParameter getParameter)
         {
             string url = NarouAPI.url + getParameter.ToString();
 
@@ -1107,6 +1108,18 @@ namespace NarouViewer.API
             }
 
             return getData;
+        }
+        public static async Task<string> GetNovel(string ncode)
+        {
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(String.Format("https://ncode.syosetu.com/{0}/", ncode));
+            req.Method = "GET";
+
+            HttpWebResponse res =  (HttpWebResponse)await req.GetResponseAsync();
+
+            Stream s = res.GetResponseStream();
+            StreamReader sr = new StreamReader(s);
+
+            return sr.ReadToEnd();
         }
 
         private static string DecompressGZIP(Stream stream)

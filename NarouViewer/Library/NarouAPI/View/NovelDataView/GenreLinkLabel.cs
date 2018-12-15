@@ -29,15 +29,11 @@ namespace NarouViewer
             this.Name = "GenreLink";
             this.Size = new Size(492, 18);
             this.TabStop = true;
-            this.LinkClicked += new LinkLabelLinkClickedEventHandler(OnLinkClicked);
 
             //  model
             this.model = model;
         }
 
-        private void OnLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-        }
         private void OnModelChanged()
         {
             if (model == null) return;

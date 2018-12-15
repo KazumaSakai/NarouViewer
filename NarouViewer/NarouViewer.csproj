@@ -56,10 +56,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Animator.cs" />
+    <Compile Include="Class\SafeString.cs" />
+    <Compile Include="Delegate\IntEventHandler.cs" />
     <Compile Include="Interface\IAnimationOpen.cs" />
     <Compile Include="Interface\IRequestSize.cs" />
     <Compile Include="Interface\IUpdateView.cs" />
-    <Compile Include="Library\NarouAPI\Controller\NarouSearchController.cs" />
+    <Compile Include="Library\NarouAPI\Controller\NovelDataContoller.cs" />
+    <Compile Include="Library\NarouAPI\Controller\SearchController.cs" />
+    <Compile Include="Library\NarouAPI\Controller\SearchParameterController.cs" />
+    <Compile Include="Library\NarouAPI\View\SearchView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="View\CheckBoxs\CheckBoxsTablesTabPage.cs">
       <SubType>Component</SubType>
     </Compile>

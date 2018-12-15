@@ -33,19 +33,17 @@ namespace NarouViewer
             this.Name = "TitleLink";
             this.TabStop = true;
             this.VisitedLinkColor = Color.FromArgb(255, 128, 0);
-            this.LinkClicked += new LinkLabelLinkClickedEventHandler(OnLinkClicked);
 
             //  Model
             this.model = model;
         }
 
-        private void OnLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://ncode.syosetu.com/" + model.ncode + "/");
-        }
         private void OnModelChanged()
         {
             if (model == null) return;
+
+            model.title = HTMLSafeString.Decode(model.title, HTMLSafeString.EncodeType.semicolon);
+
             this.Text = model.title;
             this.Size = GetLabelSize();
         }

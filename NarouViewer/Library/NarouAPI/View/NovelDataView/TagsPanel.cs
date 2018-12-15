@@ -35,11 +35,6 @@ namespace NarouViewer
             this.model = model;
         }
 
-        private void OnClickedTags(string tagName)
-        {
-            onClickedTags.Invoke(tagName);
-        }
-
         private void OnModelChanged()
         {
             if (model == null || model.keyword == null) return;
@@ -55,7 +50,7 @@ namespace NarouViewer
                     TagLinkLabel tagLink = new TagLinkLabel("");
 
                     string tag_keyword = keywords[tagLinks.Count];
-                    tagLink.LinkClicked += new LinkLabelLinkClickedEventHandler((object s, LinkLabelLinkClickedEventArgs e) => OnClickedTags(tag_keyword));
+                    tagLink.LinkClicked += new LinkLabelLinkClickedEventHandler((object s, LinkLabelLinkClickedEventArgs e) => this.onClickedTags?.Invoke(tag_keyword));
                     this.tagLinks.Add(tagLink);
                     this.Controls.Add(tagLink);
                 }

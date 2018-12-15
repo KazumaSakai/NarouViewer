@@ -1,4 +1,6 @@
-﻿namespace NarouViewer
+﻿using System;
+
+namespace NarouViewer
 {
     partial class Form1
     {
@@ -41,7 +43,6 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
             this.ResumeLayout(false);
-
         }
 
         #endregion

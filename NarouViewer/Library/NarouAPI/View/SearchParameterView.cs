@@ -29,10 +29,10 @@ namespace NarouViewer
         #endregion
 
         #region --- Controller ---
-        public NarouSearchController controller;
+        public SearchPrameterController controller;
         #endregion
 
-        #region --- 子コントロール ---
+        #region --- Child Control ---
         //  Search Line
         private Label searchLabel;
         private SearchTextBox searchTextBox;
@@ -96,11 +96,29 @@ namespace NarouViewer
         /// </summary>
         /// <param name="model">モデル</param>
         /// <param name="controller">コントローラー</param>
-        public SearchParameterView(NarouAPI.SearchParameter model, NarouSearchController controller = null)
+        public SearchParameterView(NarouAPI.SearchParameter model = null, SearchPrameterController controller = null)
+        {
+            InitializeComponent(model ?? new NarouAPI.SearchParameter(), controller ?? new SearchPrameterController());
+        }
+        public SearchParameterView(SearchPrameterController controller)
+        {
+            InitializeComponent(new NarouAPI.SearchParameter(), controller ?? new SearchPrameterController());
+        }
+
+        /// <summary>
+        /// 初期化
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="controller"></param>
+        private void InitializeComponent(NarouAPI.SearchParameter model, SearchPrameterController controller)
         {
             //  Search Line
             this.Controls.Add(this.searchLabel = new DefaultLabel("検索", "searchLabel", Point.Empty, false));
             this.Controls.Add(this.searchTextBox = new SearchTextBox(model));
+            this.searchTextBox.TextChanged += new EventHandler((object sender, EventArgs e) =>
+            {
+                this.model.word = searchTextBox.Text;
+            });
             this.Controls.Add(this.searchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 検索ワードを選択" });
             this.searchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
@@ -110,6 +128,10 @@ namespace NarouViewer
             //  Exclusion Search Line
             this.Controls.Add(this.eSearchLabel = new DefaultLabel("除外", "exclusionLabel", Point.Empty, false));
             this.Controls.Add(this.eSearchTextBox = new SearchTextBox(model));
+            this.eSearchTextBox.TextChanged += new EventHandler((object sender, EventArgs e) =>
+            {
+                this.model.notWord = eSearchTextBox.Text;
+            });
             this.Controls.Add(this.eSearchWordButton = new Button() { Size = new Size(122, 25), Text = "+ 除外ワードを選択" });
             this.eSearchWordButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
@@ -123,7 +145,7 @@ namespace NarouViewer
             {
                 OpenSearchOption(2);
             });
-            this.Controls.Add(this.detailOptButton = new Button() { Size = new Size(130, 26), Text = "+ 詳細条件設定"});
+            this.Controls.Add(this.detailOptButton = new Button() { Size = new Size(130, 26), Text = "+ 詳細条件設定" });
 
             //  Keyword Line
             this.Controls.Add(this.keywordTabs = new SearchKeywordTabControl(model, new StringEventHandler(SearchKeyword)));
@@ -134,20 +156,13 @@ namespace NarouViewer
             this.searchOptionControlList.Add(this.genrePanel);
 
             //  SearchButton Line
-            this.Controls.Add(this.searchButton = new Button() { Size = new Size(500, 33) , Text = "検索", Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128) });
+            this.Controls.Add(this.searchButton = new Button() { Size = new Size(500, 33), Text = "検索", Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Bold, GraphicsUnit.Point, 128) });
             this.searchButton.Click += new EventHandler(OnSearchButtonClicked);
 
-            //  Parent
-            this.ParentChanged += new EventHandler(OnParentChanged);
-            this._OnParentSizeChanged += new EventHandler(OnParentSizeChanged);
-
-            //  Model
-            this.model = model;
-
-            //  Controller
-            this.controller = controller ?? new NarouSearchController();
-
             //  Init
+            this.model = model;
+            this.controller = controller;
+
             this.DoubleBuffered = true;
             this.Name = "searchPanel";
             this.UpdateView();
@@ -166,36 +181,6 @@ namespace NarouViewer
             if (model == null) return;
 
             model.notWord = eSearchTextBox.Text;
-        }
-
-        #region --- Parent用フィールド ---
-        private EventHandler _OnParentSizeChanged;
-        private Control parent;
-        #endregion
-        /// <summary>
-        /// 親を変更した時のイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnParentChanged(object sender, EventArgs e)
-        {
-            if (parent != null) parent.SizeChanged -= _OnParentSizeChanged;
-            this.Parent.SizeChanged += _OnParentSizeChanged;
-
-            this.parent = Parent;
-        }
-        /// <summary>
-        /// 親のサイズが変更された時のイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnParentSizeChanged(object sender, EventArgs e)
-        {
-            int space_width = (this.Parent.Width - 35) - this.Width;
-
-            this.SuspendLayout();
-            this.Location = new Point(space_width / 2, 3);
-            this.ResumeLayout();
         }
 
         /// <summary>
@@ -245,6 +230,9 @@ namespace NarouViewer
             nowY += this.searchButton.Height + 3;
 
             this.Size = new Size(706, nowY);
+
+            (this.Parent as IUpdateView)?.UpdateView();
+
             this.ResumeLayout();
         }
 
@@ -266,6 +254,45 @@ namespace NarouViewer
 
             searchOptionControlList[index].AnimationOpen(true, true);
             searchOption_Index = index;
+        }
+
+        public void AddKeyword(string word)
+        {
+            if (searchTextBox.Text == "")
+            {
+                searchTextBox.Text = word;
+                return;
+            }
+
+            string[] line = searchTextBox.Text.Replace('　', ' ').Split(' ');
+            foreach (string item in line)
+            {
+                if (item == word)
+                {
+                    return;
+                }
+            }
+            searchTextBox.Text += String.Format(" {0}", word);
+        }
+        public void SelectGenre(int genre)
+        {
+            this.model.genre |= NarouAPI.SearchParameter.genreint2Enum[genre];
+
+            string str = NarouAPI.SearchParameter.genreint2String[genre];
+            foreach(CheckBoxsTable item in genrePanel.tables)
+            {
+                foreach(CheckBoxsPanel item2 in item.checkBoxsPanelsList)
+                {
+                    foreach(CheckBox item3 in item2.checkBoxs)
+                    {
+                        if(str.Contains(item3.Text))
+                        {
+                            item3.Checked = true;
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
         private void SearchKeyword(string word)

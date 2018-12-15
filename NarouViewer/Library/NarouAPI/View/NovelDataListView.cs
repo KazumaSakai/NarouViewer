@@ -9,8 +9,9 @@ using NarouViewer.API;
 
 namespace NarouViewer
 {
-    public class NovelDataListView : Panel
+    public class NovelDataListView : Panel, IUpdateView
     {
+        #region --- Model ---
         private List<NarouAPI.NovelData> _model;
         public List<NarouAPI.NovelData> model
         {
@@ -24,10 +25,21 @@ namespace NarouViewer
                 return _model;
             }
         }
+        #endregion
 
+        #region --- Contoller ---
+        private NovelDataController controller;
+        #endregion
+
+        #region --- Child Control ---
         private List<NovelDataView> novelDataViews;
+        #endregion
 
-        public NovelDataListView(List<NarouAPI.NovelData> model)
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="model"></param>
+        public NovelDataListView(List<NarouAPI.NovelData> model, NovelDataController controller)
         {
             this.novelDataViews = new List<NovelDataView>();
 
@@ -37,8 +49,14 @@ namespace NarouViewer
 
             //  model
             this.model = model;
+
+            //  Controller
+            this.controller = controller;
         }
 
+        /// <summary>
+        /// モデル変更
+        /// </summary>
         private void OnModelChanged()
         {
             if (this.InvokeRequired)
@@ -57,7 +75,7 @@ namespace NarouViewer
             {
                 for (int i = 0; i < needModelCount; i++)
                 {
-                    NovelDataView view = new NovelDataView(null);
+                    NovelDataView view = new NovelDataView(null, controller);
 
                     this.Controls.Add(view);
                     this.novelDataViews.Add(view);
@@ -74,6 +92,11 @@ namespace NarouViewer
                 }
             }
 
+            UpdateView();
+        }
+
+        public void UpdateView()
+        {
             int nowY = 3;
             for (int i = 0; i < model.Count; i++)
             {
@@ -85,7 +108,10 @@ namespace NarouViewer
             }
 
             this.Size = new Size(this.Width, nowY + 6);
+
+            (this.Parent as IUpdateView)?.UpdateView();
         }
+
         private void OnScrollCallBack(object sender, ScrollEventArgs e)
         {
             this.VerticalScroll.Value = e.NewValue;

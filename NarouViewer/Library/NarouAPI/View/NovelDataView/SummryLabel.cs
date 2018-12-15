@@ -9,6 +9,7 @@ namespace NarouViewer
 {
     public class SummryLabel : Label, INovelData
     {
+        #region --- model ---
         private NarouAPI.NovelData _model;
         public NarouAPI.NovelData model
         {
@@ -22,14 +23,13 @@ namespace NarouViewer
                 return _model;
             }
         }
+        #endregion
 
         public SummryLabel(NarouAPI.NovelData model)
         {
             this.AutoSize = true;
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.ForeColor = Color.FromArgb(110, 64, 0);
-            this.Location = new Point(121, 52);
-            this.Margin = new Padding(3);
             this.MaximumSize = new Size(575, 1000);
             this.MinimumSize = new Size(575, 0);
             this.Name = "Summary";
@@ -40,6 +40,8 @@ namespace NarouViewer
         private void OnModelChanged()
         {
             if (model == null) return;
+
+            model.story = HTMLSafeString.Decode(model.story, HTMLSafeString.EncodeType.semicolon);
             this.Text = model.story;
         }
     }

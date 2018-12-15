@@ -27,14 +27,6 @@ namespace NarouViewer
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.Name = "searchTextBox";
             this.Size = new Size(514, 25);
-            this.TextChanged += new EventHandler(OnTextChanged);
-        }
-
-        private void OnTextChanged(object sender, EventArgs e)
-        {
-            if (this.model == null) return;
-
-            this.model.word = this.Text;
         }
         private void OnModelChanged()
         {

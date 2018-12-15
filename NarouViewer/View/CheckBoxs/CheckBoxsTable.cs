@@ -1,5 +1,6 @@
 ﻿using NarouViewer.API;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,6 +10,7 @@ namespace NarouViewer
     {
         #region --- Controller ---
         private StringEventHandler controller;
+        public List<CheckBoxsPanel> checkBoxsPanelsList = new List<CheckBoxsPanel>();
         #endregion
 
         /// <summary>
@@ -40,7 +42,9 @@ namespace NarouViewer
                 label.Padding = new Padding(3);
                 this.Controls.Add(label, 0, i);
 
-                this.Controls.Add(new CheckBoxsPanel(lineData, controller, line), 1, i);
+                CheckBoxsPanel panel = new CheckBoxsPanel(lineData, controller, line);
+                this.checkBoxsPanelsList.Add(panel);
+                this.Controls.Add(panel, 1, i);
             }
 
             this.Size = new Size(663, 1 + totalHeight);

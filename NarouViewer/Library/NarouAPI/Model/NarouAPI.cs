@@ -776,29 +776,53 @@ namespace NarouViewer.API
                 { "ノンジャンル" , Genre.nongenre }
             };
             public static readonly Dictionary<int, string> genreint2String = new Dictionary<int, string>()
-        {
-            { 101, "異世界〔恋愛〕" },
-            { 102, "現実世界〔恋愛〕"},
-            { 201, "ハイファンタジー〔ファンタジー〕" },
-            { 202, "ローファンタジー〔ファンタジー〕" },
-            { 301, "純文学〔文芸〕" },
-            { 302, "ヒューマンドラマ〔文芸〕" },
-            { 303, "歴史〔文芸〕" },
-            { 304, "推理〔文芸〕" },
-            { 305, "ホラー〔文芸〕" },
-            { 306, "アクション〔文芸〕" },
-            { 307, "コメディー〔文芸〕" },
-            { 401, "VRゲーム〔SF〕" },
-            { 402, "宇宙〔SF〕" },
-            { 403, "空想科学〔SF〕" },
-            { 404, "パニック〔SF〕" },
-            { 9901, "童話〔その他〕" },
-            { 9902, "詩〔その他〕" },
-            { 9903, "エッセイ〔その他〕" },
-            { 9904, "リプレイ〔その他〕" },
-            { 9999, "その他〔その他〕" },
-            { 9801, "ノンジャンル〔ノンジャンル〕" },
-        };
+            {
+                { 101, "異世界〔恋愛〕" },
+                { 102, "現実世界〔恋愛〕"},
+                { 201, "ハイファンタジー〔ファンタジー〕" },
+                { 202, "ローファンタジー〔ファンタジー〕" },
+                { 301, "純文学〔文芸〕" },
+                { 302, "ヒューマンドラマ〔文芸〕" },
+                { 303, "歴史〔文芸〕" },
+                { 304, "推理〔文芸〕" },
+                { 305, "ホラー〔文芸〕" },
+                { 306, "アクション〔文芸〕" },
+                { 307, "コメディー〔文芸〕" },
+                { 401, "VRゲーム〔SF〕" },
+                { 402, "宇宙〔SF〕" },
+                { 403, "空想科学〔SF〕" },
+                { 404, "パニック〔SF〕" },
+                { 9901, "童話〔その他〕" },
+                { 9902, "詩〔その他〕" },
+                { 9903, "エッセイ〔その他〕" },
+                { 9904, "リプレイ〔その他〕" },
+                { 9999, "その他〔その他〕" },
+                { 9801, "ノンジャンル〔ノンジャンル〕" },
+            };
+            public static readonly Dictionary<int, Genre> genreint2Enum = new Dictionary<int, Genre>()
+            {
+                { 101 , Genre.other_worldy },
+                { 102 , Genre.real_world },
+                { 201 , Genre.high_fantasy },
+                { 202 , Genre.low_fantasy },
+                { 301 , Genre.pure_literature },
+                { 302 , Genre.human_drama },
+                { 303 , Genre.history },
+                { 304 , Genre.reasoning },
+                { 305 , Genre.horror },
+                { 306 , Genre.action },
+                { 307 , Genre.comedy },
+                { 401 , Genre.vr_game },
+                { 402 , Genre.universe },
+                { 403 , Genre.science_fiction },
+                { 404 , Genre.panic },
+                { 9901, Genre.fairy_tale },
+                { 9902, Genre.poem },
+                { 9903, Genre.essay },
+                { 9904, Genre.replay },
+                { 9999, Genre.other },
+                { 9801, Genre.nongenre }
+            };
 
             public static string GenreToString(Genre genre)
             {
@@ -1035,8 +1059,6 @@ namespace NarouViewer.API
                     args += "&lastup=" + lastUp.ToString();
                 }
                 if (weekly) args += "&opt=weekly";
-
-                Console.WriteLine(args);
 
                 return args;
             }

@@ -9,6 +9,7 @@ namespace NarouViewer
 {
     public class NovelDataView : Panel
     {
+        #region --- Model ---
         private NarouAPI.NovelData _model;
         public NarouAPI.NovelData model
         {
@@ -22,7 +23,13 @@ namespace NarouViewer
                 return _model;
             }
         }
+        #endregion
 
+        #region --- Controller ---
+        private NovelDataController controller;
+        #endregion
+
+        #region --- Child Control ---
         private Label writerLabel;
         private Label genreLabel;
         private Label keywordLabel;
@@ -47,8 +54,9 @@ namespace NarouViewer
         public GenreLinkLabel genreLinkLabel;
 
         private List<INovelData> iNovelDatas = new List<INovelData>();
+        #endregion
 
-        public NovelDataView(NarouAPI.NovelData model)
+        public NovelDataView(NarouAPI.NovelData model, NovelDataController controller)
         {
             this.BorderStyle = BorderStyle.FixedSingle;
             this.Name = "NovelDataVC";
@@ -77,7 +85,22 @@ namespace NarouViewer
             this.Controls.Add(this.evaluationLabel = new EvaluationLabel(model));
             this.Controls.Add(this.bookmarkLabel = new BookmarkLabel(model));
 
-            this.keywordsPanel.onClickedTags += new StringEventHandler((string s) => Console.WriteLine(s));
+            this.titleLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler((object sender, LinkLabelLinkClickedEventArgs e) =>
+            {
+                this.controller?.TitleLinkClicked?.Invoke(this.model?.ncode??"");
+            });
+            this.writerLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler((object sender, LinkLabelLinkClickedEventArgs e) =>
+            {
+                this.controller?.WriterLinkClicked?.Invoke((this.model?.userid??0).ToString());
+            });
+            this.keywordsPanel.onClickedTags += new StringEventHandler((string str)=>
+            {
+                this.controller?.TagClicked?.Invoke(str);
+            });
+            this.genreLinkLabel.LinkClicked += new LinkLabelLinkClickedEventHandler((object sender, LinkLabelLinkClickedEventArgs e) =>
+            {
+                this.controller?.GenreLinkClicked?.Invoke(this.model?.genre??0);
+            });
 
             this.iNovelDatas.Add(titleLinkLabel);
             this.iNovelDatas.Add(novelInfoLabel);
@@ -102,6 +125,9 @@ namespace NarouViewer
 
             //  Model
             this.model = model;
+
+            // Controller
+            this.controller = controller;
         }
 
         private void OnModelChanged()

@@ -18,7 +18,8 @@ namespace NarouViewer
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 form = new Form1();
 
-            form.Controls.Add(new SearchParameterView(new NarouAPI.SearchParameter()));
+            SearchController searchController = new SearchController();
+            form.Controls.Add(new SearchView(searchController));
 
             Application.Run(form);
         }

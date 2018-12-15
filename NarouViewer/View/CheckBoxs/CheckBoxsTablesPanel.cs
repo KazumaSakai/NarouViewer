@@ -28,7 +28,7 @@ namespace NarouViewer
 
         #region --- 子コントロール ---
         private Label[] titles;
-        private CheckBoxsTable[] tables;
+        public CheckBoxsTable[] tables;
         #endregion
 
         /// <summary>

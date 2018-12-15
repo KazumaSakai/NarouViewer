@@ -28,18 +28,11 @@ namespace NarouViewer
             this.Name = "WriteLink";
             this.Size = new Size(56, 16);
             this.TabStop = true;
-            this.LinkClicked += new LinkLabelLinkClickedEventHandler(OnLinkClicked);
 
             //  model
             this.model = model;
         }
-        private void OnLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            StringBuilder url = new StringBuilder();
-            url.AppendFormat("https://mypage.syosetu.com/{0}/", model.userid);
 
-            System.Diagnostics.Process.Start(url.ToString());
-        }
         private void OnModelChanged()
         {
             if (model == null) return;

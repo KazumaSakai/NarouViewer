@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Threading.Tasks;
 using NarouViewer.API;
+using System.Text.RegularExpressions;
 
 namespace NarouViewer
 {
@@ -51,9 +52,12 @@ namespace NarouViewer
             this.UpdateView();
         }
 
-        private async void Search(NarouAPI.SearchParameter searchParameter)
+        private void Search(NarouAPI.SearchParameter searchParameter)
         {
-            novelDataListView.model = await NarouAPI.GetSearchData(searchParameter);
+            Task.Run(() =>
+            {
+                novelDataListView.model = NarouAPI.GetSearchData(searchParameter).Result;
+            });
         }
         private void AddTag(string tag)
         {
@@ -63,16 +67,7 @@ namespace NarouViewer
         private void TitleClicked(string ncode)
         {
             if (ncode == "") return;
-
-            /*
-            string html = await NarouAPI.GetNovel(ncode);
-            List<(string title, string updateDay, string reUpdateDay)> list = AnalyzeNovelPage.Analyaze(html);
-
-            foreach (var item in list)
-            {
-                Console.WriteLine("{0}\n{1}\n{2}\n", item.title, item.updateDay, item.reUpdateDay);
-            }
-            */
+            System.Diagnostics.Process.Start(String.Format("https://ncode.syosetu.com/{0}/", ncode));
         }
         private void WriterClicked(string userid)
         {

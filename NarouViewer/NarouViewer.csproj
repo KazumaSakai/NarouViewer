@@ -65,7 +65,9 @@
     <Compile Include="Library\NarouAPI\Controller\NovelDataContoller.cs" />
     <Compile Include="Library\NarouAPI\Controller\SearchController.cs" />
     <Compile Include="Library\NarouAPI\Controller\SearchParameterController.cs" />
-    <Compile Include="Library\NarouAPI\Model\AnalyzeNovelPage.cs" />
+    <Compile Include="Library\NarouAPI\Model\Novel.cs" />
+    <Compile Include="Library\NarouAPI\Model\NovelPage.cs" />
+    <Compile Include="Library\NarouAPI\Model\NovelPageInfo.cs" />
     <Compile Include="Library\NarouAPI\View\SearchView.cs">
       <SubType>Component</SubType>
     </Compile>

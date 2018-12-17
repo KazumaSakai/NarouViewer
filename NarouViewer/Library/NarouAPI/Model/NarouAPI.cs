@@ -1109,17 +1109,29 @@ namespace NarouViewer.API
 
             return getData;
         }
-        public static async Task<string> GetNovel(string ncode)
+
+        public static async Task<string> GetHtml(string url)
         {
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(String.Format("https://ncode.syosetu.com/{0}/", ncode));
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             req.Method = "GET";
 
-            HttpWebResponse res =  (HttpWebResponse)await req.GetResponseAsync();
+            HttpWebResponse res = (HttpWebResponse)await req.GetResponseAsync();
 
             Stream s = res.GetResponseStream();
             StreamReader sr = new StreamReader(s);
 
             return sr.ReadToEnd();
+        }
+        public static async Task<Novel> GetNovel(string ncode)
+        {
+            string html = await GetHtml(String.Format("https://ncode.syosetu.com/{0}/", ncode));
+            
+            return new Novel(html);
+        }
+        public static async Task<NovelPage> GetNovelPage(string ncode, int page)
+        {
+            string html = await GetHtml(String.Format("https://ncode.syosetu.com/{0}/{1}/", ncode, page));
+            return new NovelPage(html);
         }
 
         private static string DecompressGZIP(Stream stream)

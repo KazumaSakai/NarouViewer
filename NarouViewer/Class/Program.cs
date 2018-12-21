@@ -21,7 +21,6 @@ namespace NarouViewer
             SearchController searchController = new SearchController();
             form.Controls.Add(new SearchView(searchController));
 
-
             Application.Run(form);
         }
     }

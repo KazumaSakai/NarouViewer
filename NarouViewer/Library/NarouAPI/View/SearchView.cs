@@ -52,7 +52,7 @@ namespace NarouViewer
             this.UpdateView();
         }
 
-        private void Search(NarouAPI.SearchParameter searchParameter)
+        private void Search(SearchParameter searchParameter)
         {
             Task.Run(() =>
             {

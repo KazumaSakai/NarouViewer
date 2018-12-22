@@ -12,8 +12,8 @@ namespace NarouViewer
     public class SearchParameterView : Panel, IUpdateView
     {
         #region --- Model ---
-        private NarouAPI.SearchParameter _model;
-        public NarouAPI.SearchParameter model
+        private SearchParameter _model;
+        public SearchParameter model
         {
             set
             {
@@ -96,13 +96,13 @@ namespace NarouViewer
         /// </summary>
         /// <param name="model">モデル</param>
         /// <param name="controller">コントローラー</param>
-        public SearchParameterView(NarouAPI.SearchParameter model = null, SearchPrameterController controller = null)
+        public SearchParameterView(SearchParameter model = null, SearchPrameterController controller = null)
         {
-            InitializeComponent(model ?? new NarouAPI.SearchParameter(), controller ?? new SearchPrameterController());
+            InitializeComponent(model ?? new SearchParameter(), controller ?? new SearchPrameterController());
         }
         public SearchParameterView(SearchPrameterController controller)
         {
-            InitializeComponent(new NarouAPI.SearchParameter(), controller ?? new SearchPrameterController());
+            InitializeComponent(new SearchParameter(), controller ?? new SearchPrameterController());
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace NarouViewer
         /// </summary>
         /// <param name="model"></param>
         /// <param name="controller"></param>
-        private void InitializeComponent(NarouAPI.SearchParameter model, SearchPrameterController controller)
+        private void InitializeComponent(SearchParameter model, SearchPrameterController controller)
         {
             //  Search Line
             this.Controls.Add(this.searchLabel = new DefaultLabel("検索", "searchLabel", Point.Empty, false));
@@ -276,9 +276,9 @@ namespace NarouViewer
         }
         public void SelectGenre(int genre)
         {
-            this.model.genre |= NarouAPI.SearchParameter.genreint2Enum[genre];
+            this.model.genre |= SearchParameter.genreint2Enum[genre];
 
-            string str = NarouAPI.SearchParameter.genreint2String[genre];
+            string str =SearchParameter.genreint2String[genre];
             foreach(CheckBoxsTable item in genrePanel.tables)
             {
                 foreach(CheckBoxsPanel item2 in item.checkBoxsPanelsList)
@@ -319,7 +319,7 @@ namespace NarouViewer
         }
         private void GenreKeyword(string word)
         {
-            NarouAPI.SearchParameter.Genre genre = NarouAPI.SearchParameter.genreString2Enum[word];
+            SearchParameter.Genre genre = SearchParameter.genreString2Enum[word];
             if(model.genre.HasFlag(genre))
             {
                 model.genre &= ~genre;

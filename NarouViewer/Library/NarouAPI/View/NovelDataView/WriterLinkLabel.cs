@@ -8,8 +8,8 @@ namespace NarouViewer
 {
     public class WriterLinkLabel : LinkLabel, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -22,7 +22,7 @@ namespace NarouViewer
             }
         }
 
-        public WriterLinkLabel(NarouAPI.NovelData model)
+        public WriterLinkLabel(NovelData model)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F);
             this.Name = "WriteLink";

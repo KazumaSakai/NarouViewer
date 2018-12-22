@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class NovelInfoLabel : Label, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public NovelInfoLabel(NarouAPI.NovelData model)
+        public NovelInfoLabel(NovelData model)
         {
             this.Name = "NovelPageNumber";
             this.Size = new Size(115, 203);

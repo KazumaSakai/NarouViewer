@@ -62,9 +62,11 @@
     <Compile Include="Interface\IAnimationOpen.cs" />
     <Compile Include="Interface\IRequestSize.cs" />
     <Compile Include="Interface\IUpdateView.cs" />
-    <Compile Include="Library\NarouAPI\Controller\NovelDataContoller.cs" />
+    <Compile Include="Library\NarouAPI\Controller\NovelDataController.cs" />
     <Compile Include="Library\NarouAPI\Controller\SearchController.cs" />
-    <Compile Include="Library\NarouAPI\Controller\SearchParameterController.cs" />
+    <Compile Include="Library\NarouAPI\Controller\SearchPrameterController.cs" />
+    <Compile Include="Library\NarouAPI\Model\NovelData.cs" />
+    <Compile Include="Library\NarouAPI\Model\SearchParameter.cs" />
     <Compile Include="Library\NarouAPI\View\SearchView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -191,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

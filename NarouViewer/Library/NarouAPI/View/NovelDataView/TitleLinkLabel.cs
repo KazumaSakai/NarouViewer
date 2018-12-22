@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class TitleLinkLabel : LinkLabel, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public TitleLinkLabel(NarouAPI.NovelData model)
+        public TitleLinkLabel(NovelData model)
         {
             this.ActiveLinkColor = Color.FromArgb(255, 158, 30);
             this.AutoSize = false;

@@ -12,8 +12,8 @@ namespace NarouViewer
     public class SearchKeywordTabControl : TabControl, IRequestSize, IAnimationOpen
     {
         #region --- Model ---
-        private NarouAPI.SearchParameter _model;
-        public NarouAPI.SearchParameter model
+        private SearchParameter _model;
+        public SearchParameter model
         {
             set
             {
@@ -184,7 +184,7 @@ namespace NarouViewer
         /// コンストラクタ
         /// </summary>
         /// <param name="model">モデル</param>
-        public SearchKeywordTabControl(NarouAPI.SearchParameter model, StringEventHandler controller)
+        public SearchKeywordTabControl(SearchParameter model, StringEventHandler controller)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.Name = "searchKeywordTabs";

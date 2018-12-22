@@ -10,8 +10,8 @@ namespace NarouViewer
     public class SummryLabel : Label, INovelData
     {
         #region --- model ---
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -25,7 +25,7 @@ namespace NarouViewer
         }
         #endregion
 
-        public SummryLabel(NarouAPI.NovelData model)
+        public SummryLabel(NovelData model)
         {
             this.AutoSize = true;
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);

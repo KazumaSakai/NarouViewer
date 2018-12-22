@@ -12,8 +12,8 @@ namespace NarouViewer
     public class NovelDataListView : Panel, IUpdateView
     {
         #region --- Model ---
-        private List<NarouAPI.NovelData> _model;
-        public List<NarouAPI.NovelData> model
+        private List<NovelData> _model;
+        public List<NovelData> model
         {
             set
             {
@@ -39,7 +39,7 @@ namespace NarouViewer
         /// コンストラクタ
         /// </summary>
         /// <param name="model"></param>
-        public NovelDataListView(List<NarouAPI.NovelData> model, NovelDataController controller)
+        public NovelDataListView(List<NovelData> model, NovelDataController controller)
         {
             this.novelDataViews = new List<NovelDataView>();
 

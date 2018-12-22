@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class EvaluationLabel : Label, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public EvaluationLabel(NarouAPI.NovelData model)
+        public EvaluationLabel(NovelData model)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.ForeColor = Color.Black;

@@ -10,8 +10,8 @@ namespace NarouViewer
     public class NovelDataView : Panel
     {
         #region --- Model ---
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -56,7 +56,7 @@ namespace NarouViewer
         private List<INovelData> iNovelDatas = new List<INovelData>();
         #endregion
 
-        public NovelDataView(NarouAPI.NovelData model, NovelDataController controller)
+        public NovelDataView(NovelData model, NovelDataController controller)
         {
             this.BorderStyle = BorderStyle.FixedSingle;
             this.Name = "NovelDataVC";

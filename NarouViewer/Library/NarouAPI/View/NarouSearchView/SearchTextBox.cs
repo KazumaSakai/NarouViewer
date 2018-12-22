@@ -7,8 +7,8 @@ namespace NarouViewer
 {
     public class SearchTextBox : TextBox
     {
-        private NarouAPI.SearchParameter _model;
-        public NarouAPI.SearchParameter model
+        private SearchParameter _model;
+        public SearchParameter model
         {
             get
             {
@@ -21,7 +21,7 @@ namespace NarouViewer
             }
         }
 
-        public SearchTextBox(NarouAPI.SearchParameter model)
+        public SearchTextBox(SearchParameter model)
         {
             this.Cursor = Cursors.IBeam;
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);

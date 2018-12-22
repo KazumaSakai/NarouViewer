@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class TagsPanel : Panel, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -27,7 +27,7 @@ namespace NarouViewer
 
         private List<TagLinkLabel> tagLinks = new List<TagLinkLabel>();
 
-        public TagsPanel(NarouAPI.NovelData model)
+        public TagsPanel(NovelData model)
         {
             this.Name = "TagsPanel";
 

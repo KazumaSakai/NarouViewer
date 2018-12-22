@@ -4,7 +4,7 @@ namespace NarouViewer
 {
     public interface INovelData
     {
-        NarouAPI.NovelData model
+        NovelData model
         {
             get;
             set;

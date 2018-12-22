@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class BookmarkLabel : Label, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public BookmarkLabel(NarouAPI.NovelData model)
+        public BookmarkLabel(NovelData model)
         {
             this.AutoSize = true;
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);

@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class GenreLinkLabel : LinkLabel, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public GenreLinkLabel(NarouAPI.NovelData model)
+        public GenreLinkLabel(NovelData model)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.Name = "GenreLink";
@@ -37,7 +37,7 @@ namespace NarouViewer
         private void OnModelChanged()
         {
             if (model == null) return;
-            this.Text = NarouAPI.SearchParameter.genreint2String[model.genre];
+            this.Text = SearchParameter.genreint2String[model.genre];
         }
     }
 }

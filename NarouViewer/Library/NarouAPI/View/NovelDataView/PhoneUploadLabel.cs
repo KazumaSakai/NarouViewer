@@ -9,8 +9,8 @@ namespace NarouViewer
 {
     public class PhoneUploadLabel : Label, INovelData
     {
-        private NarouAPI.NovelData _model;
-        public NarouAPI.NovelData model
+        private NovelData _model;
+        public NovelData model
         {
             set
             {
@@ -23,7 +23,7 @@ namespace NarouViewer
             }
         }
 
-        public PhoneUploadLabel(NarouAPI.NovelData model)
+        public PhoneUploadLabel(NovelData model)
         {
             this.Font = new Font("ＭＳ Ｐゴシック", 12F, FontStyle.Regular, GraphicsUnit.Point, 128);
             this.Size = new Size(74, 18);

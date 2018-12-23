@@ -8,5 +8,5 @@
 ## 解説
 MVCパターンを目指して作成したが、本来のMVCパターンとは違った形になってしまった。
 
-## 実行ファイル
-実行ファイルは[こちら](https://github.com/KazumaSakai/NarouViewer/raw/master/%E5%AE%9F%E8%A1%8C%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB.zip)からダウンロードできます。
+## ダウンロード
+[Version 1.0.0](https://github.com/KazumaSakai/NarouViewer/releases/tag/1.0.0)

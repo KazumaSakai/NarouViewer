@@ -1,12 +1,9 @@
-## à–¾
-¬àƒTƒCƒg[u¬à‰Æ‚É‚È‚ë‚¤v](http://syosetu.com/)‚Ì[API](https://dev.syosetu.com/man/api/)‚ðŽg—p‚µAŒŸõ‚ðs‚¦‚éƒ\ƒtƒgi–{•¶Žæ“¾‚ÌAPI‚ª‘¶Ý‚µ‚È‚¢j
+## æ¦‚è¦
+å°èª¬ã‚µã‚¤ãƒˆ[ã€Œå°èª¬å®¶ã«ãªã‚ã†ã€](http://syosetu.com/)ã®[API](https://dev.syosetu.com/man/api/)ã‚’ä½¿ç”¨ã—ã€æ¤œç´¢ã‚’è¡Œãˆã‚‹ã‚½ãƒ•ãƒˆï¼ˆæœ¬æ–‡å–å¾—ã®APIãŒå­˜åœ¨ã—ãªã„ï¼‰
 
-## –Ú“I
-EAPI‚ðŽg—p‚·‚é—ûK  
-EƒtƒH[ƒ€ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì—ûK
+## ç›®çš„
+ãƒ»APIã‚’ä½¿ç”¨ã™ã‚‹ç·´ç¿’  
+ãƒ»ãƒ•ã‚©ãƒ¼ãƒ ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ç·´ç¿’
 
-## ‰ðà
-MVCƒpƒ^[ƒ“‚ð–ÚŽw‚µ‚Äì¬‚µ‚½‚ªA–{—ˆ‚ÌMVCƒpƒ^[ƒ“‚Æ‚Íˆá‚Á‚½Œ`‚É‚È‚Á‚Ä‚µ‚Ü‚Á‚½B
-
-## ƒ_ƒEƒ“ƒ[ƒh
+## ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰
 [Version 1.0.0](https://github.com/KazumaSakai/NarouViewer/releases/tag/1.0.0)
